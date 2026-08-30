@@ -2,9 +2,13 @@
   HALF VERTICAL (400x480) — Column layout
   ════════════════════════════════════════════════════════════════
   Narrow and tall. Compact "Up Next" cards stacked vertically.
-  Shows priority, truncated title, and relative due date.
+  Item meta emphasis for priority, empty meta, truncated title.
   
-  SIMPLIFIED: Shows ALL tasks (no status filtering by default).
+  COMPACT CARD PATTERN:
+  - Item with meta emphasis class based on priority (empty meta)
+  - Task name (truncated, strikethrough if done)
+  - Due date (relative: "Today", "Tomorrow", "overdue by X")
+  - No numbering
 {%- endcomment -%}
 
 {%- assign filtered_tasks = data -%}
@@ -17,19 +21,15 @@
     <div class="columns" data-overflow-max-cols="1">
       <div class="column">
         {% for task in filtered_tasks %}
-          {%- comment -%} PRIORITY BADGE: emphasis 3=urgent, 2=high, 1=medium {%- endcomment -%}
+          {%- comment -%} PRIORITY: emphasis 3=urgent, 2=high, 1=medium {%- endcomment -%}
           {%- if task.priority == 4 -%}
-            {%- assign priority_class = "label--error" -%}
-            {%- assign priority_text = "URGENT" -%}
+            {%- assign emphasis_class = "item--meta-emphasis-3" -%}
           {%- elsif task.priority == 3 -%}
-            {%- assign priority_class = "label--warning" -%}
-            {%- assign priority_text = "HIGH" -%}
+            {%- assign emphasis_class = "item--meta-emphasis-2" -%}
           {%- elsif task.priority == 2 -%}
-            {%- assign priority_class = "label--primary" -%}
-            {%- assign priority_text = "MED" -%}
+            {%- assign emphasis_class = "item--meta-emphasis-1" -%}
           {%- else -%}
-            {%- assign priority_class = "label--small" -%}
-            {%- assign priority_text = "•" -%}
+            {%- assign emphasis_class = "" -%}
           {%- endif -%}
           
           {%- comment -%} DUE DATE: relative format {%- endcomment -%}
@@ -50,10 +50,8 @@
             {%- endif -%}
           {%- endif -%}
           
-          <div class="item">
-            <div class="meta">
-              <span class="label {{ priority_class }}">{{ priority_text }}</span>
-            </div>
+          <div class="item {{ emphasis_class }}">
+            <div class="meta"></div>
             <div class="content">
               {%- if task.done -%}
                 <span class="title title--small lg:title--base text--gray-50" style="text-decoration: line-through;" data-clamp="1">{{ task.title }}</span>
@@ -61,7 +59,9 @@
                 <span class="title title--small lg:title--base" data-clamp="1">{{ task.title }}</span>
               {%- endif -%}
               {%- if due_text -%}
-                <span class="label label--small label--gray">{{ due_text }}</span>
+                <div class="flex gap--small">
+                  <span class="label label--small label--gray">{{ due_text }}</span>
+                </div>
               {%- endif -%}
             </div>
           </div>
