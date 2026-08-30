@@ -25,10 +25,16 @@ DATA PRIORITIES:
 - assignees: show first assignee name if present
 
 DISPLAY PATTERNS:
-- Progress: prefer text percentage over progress bars (cleaner on e-ink)
 - Dates: use relative when recent ("Today", "Tomorrow") if possible, else short date
 - Task title: clamp to 1-2 lines depending on view size
 - Index numbers: use `forloop.index` in meta section of item component
+
+TASK CARDS IN SMALLER SCREENS AND NON FULL SCREENS
+On a compact screen, space is at a premium. The goal is a highly focused "Up Next", use the following fields:
+- Priority Badge: If the priority is Urgent (4), use emphasis 3., High (3), use emphasis 2, Medium (2) use emphasis 1, else default.
+- Task Name: Item Title, truncate if it exceeds the line.
+- Due Date (if actionable): due_date. Format it relatively (e.g., "Today", "Tomorrow") when near, else day/month (dd/mm). If is overdue, write "overdue by x days".
+- If item "Done" is true, cross the title out.
 
 DON'T TOUCH:
 - title_bar structure below — custom Vikunja logo is inline SVG and should never be touched!
