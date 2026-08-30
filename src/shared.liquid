@@ -52,11 +52,172 @@ COLOR POLICY:
 - If using color: prefer semantic labels (label--success for done, etc.)
 {%- endcomment -%}
 
+{%- comment -%}
+  ════════════════════════════════════════════════════════════════
+  DATA PREPARATION — FILTER PIPELINE
+  ════════════════════════════════════════════════════════════════
+  
+  TRMNL delivers the raw API response as `data` (array of task objects).
+  We process it through a series of filters, building a clean
+  `filtered_tasks` array that individual views simply loop over.
+  
+  Filter order: cheapest comparisons first → most expensive last.
+  This reduces the working set before hitting string-heavy filters.
+  
+  Filters applied:
+    1. Status         (done boolean)
+    2. Favorites      (is_favorite boolean)
+    3. Priority       (numeric threshold)
+    4. Min progress   (percent_done × 100)
+    5. Due within     (date range, excludes sentinel)
+    6. Project IDs    (comma-separated membership)
+    7. Assignee names (nested array, comma-separated)
+    8. Search         (comma-separated OR on title+description)
+  
+  After filtering, we slice to `tasks_per_view` for the render loop.
+  ════════════════════════════════════════════════════════════════
+{%- endcomment -%}
+
+{%- comment -%} ── 1. STATUS FILTER ─────────────────────────────────── {%- endcomment -%}
+{%- comment -%} active = undone tasks | completed = done tasks | all = skip {%- endcomment -%}
+{%- assign filtered_tasks = data | where_exp: "t", "t.done == false" -%}
+{%- if status_filter == "completed" -%}
+  {%- assign filtered_tasks = data | where_exp: "t", "t.done == true" -%}
+{%- elsif status_filter == "all" -%}
+  {%- assign filtered_tasks = data -%}
+{%- endif -%}
+
+{%- comment -%} ── 2. FAVORITES ONLY ───────────────────────────────── {%- endcomment -%}
+{%- comment -%} Boolean gate — only applies when user toggled it on {%- endcomment -%}
+{%- if show_favorites_only -%}
+  {%- assign filtered_tasks = filtered_tasks | where: "is_favorite", true -%}
+{%- endif -%}
+
+{%- comment -%} ── 3. PRIORITY FILTER ──────────────────────────────── {%- endcomment -%}
+{%- comment -%} Shows tasks at OR above the selected priority level. {%- endcomment -%}
+{%- comment -%} "0" means "Any" — no filtering applied. {%- endcomment -%}
+{%- assign min_priority = priority_filter | plus: 0 -%}
+{%- if min_priority > 0 -%}
+  {%- assign filtered_tasks = filtered_tasks | where_exp: "t", "t.priority >= min_priority" -%}
+{%- endif -%}
+
+{%- comment -%} ── 4. MIN PROGRESS FILTER ──────────────────────────── {%- endcomment -%}
+{%- comment -%} Vikunja stores percent_done as 0–1 decimal (0.3 = 30%). {%- endcomment -%}
+{%- comment -%} Form field is a whole number 0–100, so we compare * 100. {%- endcomment -%}
+{%- assign min_pct = min_progress | plus: 0 -%}
+{%- if min_pct > 0 -%}
+  {%- assign filtered_tasks = filtered_tasks | where_exp: "t", "t.percent_done | times: 100 >= min_pct" -%}
+{%- endif -%}
+
+{%- comment -%} ── 5. DUE WITHIN N DAYS ────────────────────────────── {%- endcomment -%}
+{%- comment -%} Excludes Vikunja's "0001-01-01T00:00:00Z" sentinel (no date). {%- endcomment -%}
+{%- comment -%} Only includes tasks due between now and now + N days. {%- endcomment -%}
+{%- comment -%} "0" means "Anytime" — no date filtering. {%- endcomment -%}
+{%- assign due_days = due_within_days | plus: 0 -%}
+{%- if due_days > 0 -%}
+  {%- assign now_s = "now" | date: "%s" | plus: 0 -%}
+  {%- assign cutoff_s = now_s | plus: due_days | times: 86400 -%}
+  {%- assign due_matched = "" | split: "" -%}
+  {%- for task in filtered_tasks -%}
+    {%- if task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil -%}
+      {%- assign due_s = task.due_date | date: "%s" | plus: 0 -%}
+      {%- if due_s >= now_s and due_s <= cutoff_s -%}
+        {%- assign due_matched = due_matched | push: task -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- assign filtered_tasks = due_matched -%}
+{%- endif -%}
+
+{%- comment -%} ── 6. PROJECT IDS FILTER ───────────────────────────── {%- endcomment -%}
+{%- comment -%} Comma-separated list, OR logic — task matches if its {%- endcomment -%}
+{%- comment -%} project_id is in the user-provided set. Empty = all. {%- endcomment -%}
+{%- if project_ids != "" and project_ids != nil -%}
+  {%- assign pid_list = project_ids | split: "," -%}
+  {%- assign proj_matched = "" | split: "" -%}
+  {%- for task in filtered_tasks -%}
+    {%- assign tid = task.project_id | append: "" -%}
+    {%- for pid in pid_list -%}
+      {%- assign pid_trim = pid | strip -%}
+      {%- if tid == pid_trim -%}
+        {%- assign proj_matched = proj_matched | push: task -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endfor -%}
+  {%- assign filtered_tasks = proj_matched -%}
+{%- endif -%}
+
+{%- comment -%} ── 7. ASSIGNEE NAMES FILTER ────────────────────────── {%- endcomment -%}
+{%- comment -%} Comma-separated names, OR logic. A task matches if ANY {%- endcomment -%}
+{%- comment -%} provided name matches ANY of its assignees (by name or {%- endcomment -%}
+{%- comment -%} username). Case-insensitive. Empty = all assignees. {%- endcomment -%}
+{%- if assignee_names != "" and assignee_names != nil -%}
+  {%- assign name_list = assignee_names | split: "," -%}
+  {%- assign assignee_matched = "" | split: "" -%}
+  {%- for task in filtered_tasks -%}
+    {%- if task.assignees != null and task.assignees.size > 0 -%}
+      {%- assign is_assignee_match = false -%}
+      {%- for assignee in task.assignees -%}
+        {%- for name in name_list -%}
+          {%- assign clean_name = name | strip | downcase -%}
+          {%- assign a_name = assignee.name | downcase -%}
+          {%- assign a_user = assignee.username | downcase -%}
+          {%- if a_name == clean_name or a_user == clean_name -%}
+            {%- assign is_assignee_match = true -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endfor -%}
+      {%- if is_assignee_match -%}
+        {%- assign assignee_matched = assignee_matched | push: task -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- assign filtered_tasks = assignee_matched -%}
+{%- endif -%}
+
+{%- comment -%} ── 8. SEARCH KEYWORDS FILTER ───────────────────────── {%- endcomment -%}
+{%- comment -%} Comma-separated keywords, OR logic. A task matches if {%- endcomment -%}
+{%- comment -%} ANY keyword appears in its title OR description. {%- endcomment -%}
+{%- comment -%} Vikunja stores description as HTML — we can't easily strip {%- endcomment -%}
+{%- comment -%} tags in Liquid, so we search raw (HTML tags won't match {%- endcomment -%}
+{%- comment -%} typical keywords anyway). Case-insensitive. {%- endcomment -%}
+{%- if search_query != "" and search_query != nil -%}
+  {%- assign kw_list = search_query | split: "," -%}
+  {%- assign search_matched = "" | split: "" -%}
+  {%- for task in filtered_tasks -%}
+    {%- assign is_search_match = false -%}
+    {%- assign t_title = task.title | downcase -%}
+    {%- assign t_desc = task.description | downcase -%}
+    {%- for kw in kw_list -%}
+      {%- assign clean_kw = kw | strip | downcase -%}
+      {%- if t_title contains clean_kw or t_desc contains clean_kw -%}
+        {%- assign is_search_match = true -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if is_search_match -%}
+      {%- assign search_matched = search_matched | push: task -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- assign filtered_tasks = search_matched -%}
+{%- endif -%}
+
+{%- comment -%} ── LIMIT TO TASKS_PER_VIEW ─────────────────────────── {%- endcomment -%}
+{%- comment -%} Slice the final filtered set to the user's desired count. {%- endcomment -%}
+{%- assign tpv = tasks_per_view | plus: 0 -%}
+{%- if tpv < 1 -%}{%- assign tpv = 6 -%}{%- endif -%}
+{%- assign filtered_tasks = filtered_tasks | slice: 0, tpv -%}
+
+{%- comment -%}
+  `filtered_tasks` is now ready for individual views to loop over.
+  Views should use:
+    {% for task in filtered_tasks %} ... {% endfor %}
+{%- endcomment -%}
+
 {%- comment -%}Shared title_bar component for all views{%- endcomment -%}
 {%- capture title_bar -%}
 <div class="title_bar">
     <img class="image" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUiIGlkPSJMYXllcl8xIiB4PSIwIiB5PSIwIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8c3R5bGU+LnN0MXtmaWxsOiNmZmZ9LnN0NXtmaWxsOiM0OTQ5NDl9PC9zdHlsZT4KICA8cGF0aCBkPSJNNDUyLjkgOTMuMmMtNC4yLTUuMi04LjYtMTAuMi0xMy4zLTE1LjFDMzkxLjcgMjcuNyAzMjYuNSAwIDI1NiAwIDE4Ny45IDAgMTIzLjkgMjYuNSA3NS44IDc0LjcgNjkuOSA4MC42IDY0LjMgODYuOCA1OSA5My4yYy0zNy41IDQ1LjUtNTcuOCAxMDItNTcuOCAxNjEuN0MxLjEgMzIzIDI3LjYgMzg3IDc1LjggNDM1LjFjNDguMSA0OC4xIDExMi4yIDc0LjcgMTgwLjIgNzQuNyA2OC4xIDAgMTMyLjEtMjYuNSAxODAuMi03NC43IDQ4LjEtNDguMSA3NC43LTExMi4yIDc0LjctMTgwLjIgMC01OC4yLTIwLjktMTE2LjEtNTgtMTYxLjciIHN0eWxlPSJmaWxsOiMxOTZhZmYiPjwvcGF0aD4KICA8cGF0aCBkPSJNMzM0LjkgMzIyLjhjOS41LTI3LjggMjUuMS0zNi4zIDI3LjEtNzkuMi43LTE1LjEtMy45LTYyLjktMy45LTYyLjlzNy40LTE5LjItNi45LTQwLjZjLTIyLjItMzMuMi02Ny44LTM1LjQtOTEuOC0zNS40cy02OS4xIDIuMy05MS4zIDM1LjRjLTE0LjMgMjEuNC02LjkgNDAuNi02LjkgNDAuNnMtMi41IDI0LjYtNC40IDQ2LjNjLS41IDUuMSAwIDI1LjMuNyAzMC4xIDEuMSA4LjcgMy44IDE3LjMgNi45IDI1LjYgMy44IDEwLjYgOS44IDIxLjMgMTQuMyAzMi4xIDEzLjggMzIuNyAyLjIgNzMuMyAyLjkgMTA4LjYuNiAyNS4xLTUuMyA1MC41LTcuNiA3NSAyNi4xIDguOSA1My43IDEzLjUgODIgMTMuNSAzMS44IDAgNjIuNy01LjggOTEuNi0xNy01LjQtMzAuNy0xMS43LTU5LjgtMTIuNy03MC45LTIuOC0zMy40LTExLTY5IDAtMTAxLjIiIGNsYXNzPSJzdDEiPjwvcGF0aD4KICA8cGF0aCBkPSJNMTU5LjQgMTI3LjNjLjMgNSAuOCAxMC4xIDIuMiAxNC45LjQgMS41IDEuMSA1LjIgMyA1LjggMi40LjcgNi45LTIuMiA4LjYtMy40IDMuMy0yLjQgNi40LTQuOSA5LjYtNy4zIDIuMS0xLjYgNC40LTIuOCA2LjQtNC40IDIuMi0xLjcgMy45LTMuOCA1LjgtNS45IDIuMy0yLjUgMy45LTUuMSA1LjctNy44IDEuNC0yLjIgOS44LTMuNiAxMS4yLTUuNiAxLjUtMi4yLjItNC45LjItNy42IDAtMTkuNyAxLjItMzkuMiAxLjYtNTguNS41LTEzLjIgNS43LTI5LTE0LjItMjIuOC00Mi40IDEzLjItNDIgNzEuOS00MC4xIDEwMi42bTE4Ny41IDI3LjZjLS40LS41LTEuMS0uOS0xLjctMS4zLTIuNC0xLjgtNC42LTMuNi02LjctNS43LTIuNS0yLjYtNS4xLTUtNy41LTcuNy0yLjEtMi4zLTQuNi00LjQtNi42LTYuOC0xLjQtMS42LTIuNy0zLjItMy45LTQuOS0uNi0uOC0uOS0xLjktMS40LTIuOC0uNy0xLjMtMTAuNi0yLjctOS42LTQgMS43LTIuMiA1LjQtNC4xIDYuMy02LjYgNC42LTEyLjkgNi42LTY0LjkgNy4xLTc4LjIgMS40LTMzLjkgMzEuMiAxLjcgMzYuNCAxNS4zIDE1LjEgMzkuNyA2LjEgNjguNy0xMi4zIDEwMi43IiBjbGFzcz0ic3QxIj48L3BhdGg+CiAgPHBhdGggZD0iTTMwNi40IDI4NS41YzAtMTkuNi0yLjUtMjcuNS0xMy40LTM3LjEtNi44LTYtMTQuOC04LjMtMjcuNS04LTEyLjctLjMtMjEuOSAzLjYtMjguNSAxMC40LTEwIDEwLjQtMTIuNiAxNi41LTEyLjYgMzYuMSAwIDEwLjYgMTEuNCAzNCAxNC44IDM5LjQgNS42IDkuNSAxNi4xIDEzIDI2LjMgMTIuMyAxMC4yLjcgMjAuNy0yLjcgMjYuMy0xMi4zIDMuNC01LjMgMTQuNi0yOC4zIDE0LjYtNDAuOCIgc3R5bGU9ImZpbGw6I2YxZTZkMyI+PC9wYXRoPgogIDxwYXRoIGQ9Ik0xNzYuMyAxNDUuM2MtMi42LTIyLjktMTAuMi02My43IDE2LjMtODggMi45LTIuNyAzLjcgNi40IDQuMiAxMC4xLjcgNS4xIDAgMTkuNS4xIDI0LjYuMiA5LjYgMi4yIDE0LjYgMS4zIDE5LTIuNiAxMi00LjYgMTEuMi03LjEgMTguNS00LjggMTQuNC0xNC4xIDIyLTE0LjggMTUuOG0xNjYtNC41YzIuNyA0LjkgOS44LTIxLjMgMTItMzIuNyAyLjEtMTAuNyA0LjgtMjQuOSAxLjEtMzUuNi0yLTUuNy0xNC4xLTIyLjUtMTUuNS0xNi43LS42IDIuMi0uOCAxOC45LTIuMiAyNi44LTEuNyA5LjktNC44IDE5LjYtNC44IDI5LjYgMCAyMi41IDYuOCAyMy41IDkuNCAyOC42IiBzdHlsZT0iZmlsbDojZjFkN2Q0Ij48L3BhdGg+CiAgPHBhdGggZD0iTTI1NC44IDQwOS44Yy0uNiAxLjctNC45IDMtNi42IDMuNi00IDEuMy03LjUtMS44LTkuNy00LjUtMy4xLTMuNi0zLTkuNS00LjMtMTMuNy0uOC0yLjYtNS4yLTIuOS02LjUtLjUtNC40IDcuOS0yMS41LTctMTcuNi0xMiAyLjYtMy4zLTMuNy02LjItNi4zLTIuOS03LjcgOS42IDEzIDI3LjUgMjQuOCAyMi42LjUgMi40IDEuMSA0LjggMi4xIDcuMSAyIDQuNSA2LjQgNy40IDEwLjkgOS44IDYuMiAzLjMgMTguMS0yLjUgMjAtOCAxLjQtMy45LTUuNS01LjMtNi44LTEuNW01NC42LTU4Yy42IDIuNy43IDExLjctNC4yIDYuOC0yLTItNi0uOC02LjIgMS45LS40IDYuMi02LjYgNi4zLTEyIDQuNS00LjMtMS41LTYuNSA0LjQtMi4zIDUuOSA3LjkgMi44IDE2LjUgMS4yIDE5LjktNC43IDIuNyAxLjMgNS43IDEuNiA4LjEtLjcgNC4yLTQgNC45LTkuNiAzLjYtMTQuOC0uOS00LTcuOS0yLjgtNi45IDEuMU0zMjIgNDgxLjdjLTEuOSAzLjgtNS4zIDMuNi04LjkgMi0yLjctMS4yLTYgLjgtNS4yIDMuNSAxLjYgNS40LTUuMyA3LTkuOSA1LjEtNC4xLTEuNy03LjcgMy43LTMuNSA1LjQgOC40IDMuNSAxOSAuNCAyMC42LTYuOSA1LjQuOSAxMC41LS43IDEzLjEtNS45IDEuNy0zLjgtNC40LTYuOS02LjItMy4ybS01NC41LTI5My4yYy0uOSA1LjQtMTAuOS0uOS0xMy40LTIuNi0yLjItMS41LTUtLjYtNS4zIDEuOS0uNCAzLjQtNC45IDIuNC03IDItMy45LS44LTcuMy0zLjMtNy40LTYuOXMyLjItNy4zIDMuNC0xMC43Yy44LTIuMS0yLjMtNC41LTQuNi0zLjEtNCAyLjYtMjMuNiA0LjktMTUuOC0zLjYgMi41LTIuNy0xLjktNi42LTQuNC0zLjgtMy42IDMuOS02IDEyLjkgMS43IDE0LjggNC4xIDEgMTAgMSAxNS4xLS4yLTIuMSA2LjgtMi42IDEzIDYuMSAxNy4zIDUuOSAyLjkgMTQgMi45IDE3LjQtMS42IDcuMiAzLjkgMTguNSA3LjYgMjAuMS0yLjEuNi0zLjQtNS40LTQuOS01LjktMS40IiBzdHlsZT0iZmlsbDojZmFlZWUwIj48L3BhdGg+CiAgPHBhdGggZD0iTTIzMy44IDMxMi43YzEwLjUuOSAyMC45IDMuMyAzMS41IDIuOSA2LjctLjIgMTMuNy0xLjIgMjAuNC0yLjIgNC44LS43IDEwLjgtMS42IDE0LTUuMS4zIDEyLTI0LjYgMTUuNy0zNC4yIDE1LjktMTEuMy4zLTIzLjgtNC42LTMxLjctMTEuNSIgY2xhc3M9InN0NSI+PC9wYXRoPgogIDxwYXRoIGQ9Ik0yNjIuMSAyODcuOGMtMS4yIDcuNy0xLjQgMTUuNC0uNyAyMy4yLjIgMi0uMyA2LjggMi4zIDcuOCAyLjIuOCA0LjktLjcgNS4yLTIuNy42LTMuMy0uOC03LjUtLjktMTAuOS0uMS00IDAtNy45LjQtMTEuOS4zLTIuMyAxLjYtNS41LTEuMS03LjEtMi0xLjItNC45LS44LTUuMiAxLjYiIGNsYXNzPSJzdDUiPjwvcGF0aD4KICA8cGF0aCBkPSJNMjgyLjQgMjY5LjFjLTYuMy4zLTEyLjEgMy44LTE2LjggNy4yLTQuMy0yLjgtMTAuNy01LjQtMTYuMS0zLjktMy4yLjktLjMgMS45IDEgMi43IDIuNSAxLjYgNC41IDMuOCA2LjMgNS45IDIuOCAzLjMgNS4yIDYuOSA4LjIgMTAuMSAyLTEuNSA0LTIuOSA1LjgtNC43LjgtLjggNy41LTkuOCA4LjYtMTEuMy43LTEgMS4zLTIgMi4xLTIuOS42LS45IDIuOC0yLjMuOS0zLjEiIGNsYXNzPSJzdDUiPjwvcGF0aD4KICA8cGF0aCBkPSJNMjAyLjkgMjI2LjZjMy4xLTggNi40LTE4LjIgMTQuOS0xNi41IDYuNCAxLjQgMTUuMSAyMi45IDkuNSAyMC43LTMtMS4xLTUuNC0xMC45LTExLTEyLjItMy42LS44LTguNSAxMS42LTEzLjMgMTIuOC0yLjIuNi0xLTIuOC0uMS00LjhtOTEuMyAwYzMuMS04IDYuNC0xOC4yIDE0LjktMTYuNSA2LjQgMS40IDE1LjEgMjIuOSA5LjUgMjAuNy0zLTEuMS01LjQtMTAuOS0xMS0xMi4yLTMuNi0uOC04LjUgMTEuNi0xMy4zIDEyLjgtMi4xLjYtMS0yLjgtLjEtNC44IiBzdHlsZT0iZmlsbDojMmMzODQ0Ij48L3BhdGg+Cjwvc3ZnPgo=">
     <span class="title">Vikunja</span>
-    <span class="instance">{{ data | size }} open</span>
+    <span class="instance">{{ filtered_tasks | size }} open</span>
 </div>
 {%- endcapture -%}
