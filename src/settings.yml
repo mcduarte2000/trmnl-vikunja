@@ -42,6 +42,26 @@ custom_fields:
   description: Base URL including /api/v1
   placeholder: http://localhost:3456/api/v1
   default: http://localhost:3456/api/v1
+- keyname: cf_access_client_id
+  field_type: password
+  name: CF Access Client ID
+  description: Cloudflare Access Client ID for Zero Trust tunnels
+  placeholder: "(optional — only if behind Cloudflare Access)"
+  default: ''
+  help_text: 'Only needed if your Vikunja instance is behind a Cloudflare Zero Trust tunnel. Leave empty otherwise.
+
+    '
+  optional: true
+- keyname: cf_access_client_secret
+  field_type: password
+  name: CF Access Client Secret
+  description: Cloudflare Access Client Secret for Zero Trust tunnels
+  placeholder: "(optional — only if behind Cloudflare Access)"
+  default: ''
+  help_text: 'Only needed if your Vikunja instance is behind a Cloudflare Zero Trust tunnel. Leave empty otherwise.
+
+    '
+  optional: true
 - keyname: status_filter
   field_type: select
   name: Task Status
@@ -79,16 +99,19 @@ custom_fields:
   description: Filter by assignee. Leave empty for all assignees.
   placeholder: Miguel
   default: ''
-  help_text: 'Enter one or more assignee names separated by commas (e.g. "Miguel,Ana"). Matches against task.assignees[].name. Leave empty to show all tasks regardless of assignee.
+  help_text: 'Enter one or more assignee names separated by commas (e.g. "Miguel,Ana"). Matches against task assignees. Leave empty to show all tasks regardless of assignee.
 
     '
   optional: true
 - keyname: search_query
   field_type: text
-  name: Search
-  description: Filter by task title or description
-  placeholder: Enter keywords...
+  name: Search Keywords
+  description: Filter by task title or description. Multiple terms = OR logic.
+  placeholder: bug,fix,critical
   default: ''
+  help_text: 'Enter one or more keywords separated by commas (e.g. "bug,fix,critical"). A task matches if any keyword is found in its title or description. Leave empty for no search filter.
+
+    '
   optional: true
 - keyname: show_favorites_only
   field_type: boolean
