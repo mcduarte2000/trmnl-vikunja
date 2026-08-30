@@ -147,6 +147,15 @@ custom_fields:
   min: 1
   max: 10
   default: 6
+- keyname: full_view_mode
+  field_type: select
+  name: Full Screen View
+  description: Choose how tasks appear on the full screen
+  options:
+  - Task List: task_list
+  - Kanban: kanban
+  default: task_list
+  help_text: 'Task List shows tasks in a vertical list with details. Kanban splits tasks into 3 columns: To Do, In Progress, Done.'
 name: Vikunja
 description: To‑do app to organize you life
 refresh_interval: 15
