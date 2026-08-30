@@ -1,3 +1,10 @@
+{%- comment -%}
+  HALF VERTICAL (400x480) — Column layout
+  ════════════════════════════════════════════════════════════════
+  Narrow and tall. Stacks 4-6 tasks vertically in a single column.
+  Shows due date and progress. lg: prefixes for TRMNL X scaling.
+{%- endcomment -%}
+
 <div class="layout layout--col gap">
   {% if filtered_tasks.size > 0 %}
     <div class="columns" data-overflow-max-cols="1">
@@ -8,7 +15,7 @@
               <span class="index">{{ forloop.index }}</span>
             </div>
             <div class="content">
-              <span class="title title--small" data-clamp="1">{{ task.title }}</span>
+              <span class="title title--small lg:title--base" data-clamp="1">{{ task.title }}</span>
               {% if task.due_date != "0001-01-01T00:00:00Z" %}
                 <span class="description">{{ task.due_date | date: "%b %d" }}</span>
               {% endif %}

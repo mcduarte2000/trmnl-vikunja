@@ -1,3 +1,10 @@
+{%- comment -%}
+  QUADRANT (400x240) — Minimal postcard layout
+  ════════════════════════════════════════════════════════════════
+  Tiny space. Shows 2-3 tasks max with minimal details
+  (title + percent only). Title uses smaller size even on large screens.
+{%- endcomment -%}
+
 <div class="layout layout--col gap">
   {% if filtered_tasks.size > 0 %}
     <div class="columns" data-overflow-max-cols="1">

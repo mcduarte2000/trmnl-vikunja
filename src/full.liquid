@@ -1,3 +1,11 @@
+{%- comment -%}
+  FULL VIEW (800x480)
+  ════════════════════════════════════════════════════════════════
+  Shows 6-8 tasks in a 2-column grid layout.
+  Each task displays: title (clamped), assignee, due date, progress %.
+  Uses lg: prefixes to scale up text on TRMNL X (1040x780).
+{%- endcomment -%}
+
 <div class="layout layout--col gap">
   {% if filtered_tasks.size > 0 %}
     <div class="grid grid--cols-2">
@@ -7,7 +15,10 @@
             <span class="index">{{ forloop.index }}</span>
           </div>
           <div class="content">
-            <span class="title title--small" data-clamp="1">{{ task.title }}</span>
+            <span class="title title--small lg:title--base" data-clamp="1">{{ task.title }}</span>
+            {% if task.description != "" and task.description != nil %}
+              <span class="description" data-clamp="1">{{ task.description | strip_html | truncate: 40 }}</span>
+            {% endif %}
             {% if task.assignees.size > 0 %}
               <span class="description">{{ task.assignees[0].name }}</span>
             {% endif %}

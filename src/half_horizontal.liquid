@@ -1,3 +1,11 @@
+{%- comment -%}
+  HALF HORIZONTAL (800x240) — Banner layout
+  ════════════════════════════════════════════════════════════════
+  Wide and shallow. Uses columns with overflow to distribute
+  3-4 tasks side-by-side. Minimal details (title + progress only).
+  lg: prefixes scale text for TRMNL X.
+{%- endcomment -%}
+
 <div class="layout layout--col gap">
   {% if filtered_tasks.size > 0 %}
     <div class="columns" data-overflow-max-cols="2">
@@ -8,7 +16,7 @@
               <span class="index">{{ forloop.index }}</span>
             </div>
             <div class="content">
-              <span class="title title--small" data-clamp="1">{{ task.title }}</span>
+              <span class="title title--small lg:title--base" data-clamp="1">{{ task.title }}</span>
               {% if task.percent_done > 0 %}
                 <span class="label label--small">{{ task.percent_done | times: 100 | round: 0 }}%</span>
               {% endif %}
