@@ -38,10 +38,13 @@ custom_fields:
   required: true
 - keyname: base_url
   field_type: text
-  name: Vikunja API URL
-  description: Base URL including /api/v1
-  placeholder: http://localhost:3456/api/v1
-  default: http://localhost:3456/api/v1
+  name: Vikunja Instance URL
+  description: Your Vikunja instance URL (API path is added automatically)
+  placeholder: https://app.vikunja.cloud
+  default: https://app.vikunja.cloud
+  help_text: 'Enter your Vikunja URL without the /api/v1 suffix. Examples: http://https://my-domain.com:3456 or https://app.vikunja.cloud
+
+    '
 - keyname: cf_access_client_id
   field_type: password
   name: CF Access Client ID
