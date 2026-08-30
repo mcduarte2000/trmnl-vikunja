@@ -1,27 +1,25 @@
 <div class="layout layout--col gap">
   {% if filtered_tasks.size > 0 %}
-    <div class="columns" data-overflow-max-cols="2">
-      <div class="column">
-        {% for task in filtered_tasks %}
-          <div class="item">
-            <div class="meta">
-              <span class="index">{{ forloop.index }}</span>
-            </div>
-            <div class="content">
-              <span class="title title--small" data-clamp="1">{{ task.title }}</span>
-              {% if task.assignees.size > 0 %}
-                <span class="description">{{ task.assignees[0].name }}</span>
-              {% endif %}
-              {% if task.due_date != "0001-01-01T00:00:00Z" %}
-                <span class="label label--small label--gray">{{ task.due_date | date: "%b %d" }}</span>
-              {% endif %}
-              {% if task.percent_done > 0 %}
-                <span class="label label--small">{{ task.percent_done | times: 100 | round: 0 }}%</span>
-              {% endif %}
-            </div>
+    <div class="grid grid--cols-2">
+      {% for task in filtered_tasks %}
+        <div class="item">
+          <div class="meta">
+            <span class="index">{{ forloop.index }}</span>
           </div>
-        {% endfor %}
-      </div>
+          <div class="content">
+            <span class="title title--small" data-clamp="1">{{ task.title }}</span>
+            {% if task.assignees.size > 0 %}
+              <span class="description">{{ task.assignees[0].name }}</span>
+            {% endif %}
+            {% if task.due_date != "0001-01-01T00:00:00Z" %}
+              <span class="label label--small label--gray">{{ task.due_date | date: "%b %d" }}</span>
+            {% endif %}
+            {% if task.percent_done > 0 %}
+              <span class="label label--small">{{ task.percent_done | times: 100 | round: 0 }}%</span>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
     </div>
   {% else %}
     <div class="item">
