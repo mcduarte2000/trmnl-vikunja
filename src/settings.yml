@@ -34,18 +34,14 @@ custom_fields:
 - keyname: api_token
   field_type: password
   name: Vikunja API Token
-  description: Paste your Vikunja API token here
+  description: Paste your Vikunja API token
   required: true
 - keyname: base_url
   field_type: text
   name: Vikunja API URL
-  description: Base URL of your Vikunja instance (includes /api/v1)
-  options:
-  - Self-hosted (localhost): http://localhost:3456/api/v1
-  - Vikunja Cloud: https://app.vikunja.cloud/api/v1
+  description: Base URL including /api/v1
+  placeholder: http://localhost:3456/api/v1
   default: http://localhost:3456/api/v1
-  placeholder: https://your-vikunja-domain.com/api/v1
-  required: true
 - keyname: status_filter
   field_type: select
   name: Task Status
@@ -67,13 +63,25 @@ custom_fields:
   - Highest: 4
   - Urgent: 5
   default: '0'
-- keyname: project_id
-  field_type: select
-  name: Project
-  description: Filter tasks by project
-  options:
-  - All Projects: ''
+- keyname: project_ids
+  field_type: text
+  name: Project IDs
+  description: Filter by project. Leave empty for all projects.
+  placeholder: '2'
   default: ''
+  help_text: 'Enter one or more project IDs separated by commas (e.g. "2,5,7"). Leave empty to show tasks from all projects.
+
+    '
+  optional: true
+- keyname: assignee_names
+  field_type: text
+  name: Assignee Names
+  description: Filter by assignee. Leave empty for all assignees.
+  placeholder: Miguel
+  default: ''
+  help_text: 'Enter one or more assignee names separated by commas (e.g. "Miguel,Ana"). Matches against task.assignees[].name. Leave empty to show all tasks regardless of assignee.
+
+    '
   optional: true
 - keyname: search_query
   field_type: text
