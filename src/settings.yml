@@ -30,6 +30,89 @@ oauth_token_field_name: ''
 oauth_expiry_field_name: ''
 oauth_expiry_strategy: ''
 oauth_fixed_expiry_ms: ''
+custom_fields:
+- keyname: api_token
+  field_type: password
+  name: Vikunja API Token
+  description: Paste your Vikunja API token here
+  required: true
+- keyname: base_url
+  field_type: text
+  name: Vikunja API URL
+  description: Base URL of your Vikunja instance (includes /api/v1)
+  options:
+  - Self-hosted (localhost): http://localhost:3456/api/v1
+  - Vikunja Cloud: https://app.vikunja.cloud/api/v1
+  default: http://localhost:3456/api/v1
+  placeholder: https://your-vikunja-domain.com/api/v1
+  required: true
+- keyname: status_filter
+  field_type: select
+  name: Task Status
+  description: Filter tasks by completion status
+  options:
+  - Active: active
+  - Completed: completed
+  - All: all
+  default: active
+- keyname: priority_filter
+  field_type: select
+  name: Minimum Priority
+  description: Show tasks at or above this priority level
+  options:
+  - Any: 0
+  - Low: 1
+  - Medium: 2
+  - High: 3
+  - Highest: 4
+  - Urgent: 5
+  default: '0'
+- keyname: project_id
+  field_type: select
+  name: Project
+  description: Filter tasks by project
+  options:
+  - All Projects: ''
+  default: ''
+  optional: true
+- keyname: search_query
+  field_type: text
+  name: Search
+  description: Filter by task title or description
+  placeholder: Enter keywords...
+  default: ''
+  optional: true
+- keyname: show_favorites_only
+  field_type: boolean
+  name: Favorites Only
+  description: Show only starred/favorite tasks
+  default: false
+- keyname: min_progress
+  field_type: number
+  name: Min Progress (%)
+  description: Only show tasks with at least this much progress
+  min: 0
+  max: 100
+  default: 0
+  optional: true
+- keyname: due_within_days
+  field_type: select
+  name: Due Within
+  description: Filter by upcoming due dates
+  options:
+  - Anytime: 0
+  - Today: 1
+  - This Week: 7
+  - Next 2 Weeks: 14
+  - This Month: 30
+  default: '0'
+- keyname: tasks_per_view
+  field_type: number
+  name: Tasks Per View
+  description: Maximum number of tasks to display
+  min: 1
+  max: 10
+  default: 6
 name: Vikunja
 description: To‑do app to organize you life
 refresh_interval: 15
