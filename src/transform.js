@@ -35,31 +35,6 @@ function daysFromNowMs(days) {
   return Date.now() + days * 24 * 60 * 60 * 1000;
 }
 
-// ── Build API Request ────────────────────────────────────────────
-
-/**
- * Builds the fetch options for the Vikunja API request.
- * Conditionally includes Cloudflare Access headers if provided.
- *
- * @param {Object} config - Plugin form field values
- * @returns {Object} fetch options with headers
- */
-function buildRequestOptions(config) {
-  const headers = {
-    Authorization: `Bearer ${config.api_token}`,
-    "Content-Type": "application/json",
-  };
-
-  // Only add CF Zero Trust headers if both are present
-  // Cloudflare requires BOTH headers to authenticate — one alone won't work
-  if (config.cf_access_client_id && config.cf_access_client_secret) {
-    headers["CF-Access-Client-Id"] = config.cf_access_client_id;
-    headers["CF-Access-Client-Secret"] = config.cf_access_client_secret;
-  }
-
-  return { headers };
-}
-
 // ── Filter Functions ─────────────────────────────────────────────
 
 /**
