@@ -1,17 +1,16 @@
-<div class="layout layout--col">
-  {% if data.size > 0 %}
-    <div class="columns">
+<div class="layout layout--col gap">
+  {% if filtered_tasks.size > 0 %}
+    <div class="columns" data-overflow-max-cols="2">
       <div class="column">
-        {% for task in data %}
+        {% for task in filtered_tasks limit: 4 %}
           <div class="item">
-            <div class="meta"></div>
+            <div class="meta">
+              <span class="index">{{ forloop.index }}</span>
+            </div>
             <div class="content">
-              <span class="title title--small">{{ task.title }}</span>
-              {% if task.due_date != "0001-01-01T00:00:00Z" %}
-                <span class="description">{{ task.due_date | date: "%b %d" }}</span>
-              {% endif %}
+              <span class="title title--small" data-clamp="1">{{ task.title }}</span>
               {% if task.percent_done > 0 %}
-                <span class="label label--small label--gray">{{ task.percent_done | times: 100 | round: 0 }}%</span>
+                <span class="label label--small">{{ task.percent_done | times: 100 | round: 0 }}%</span>
               {% endif %}
             </div>
           </div>
@@ -23,7 +22,6 @@
       <div class="meta"></div>
       <div class="content">
         <span class="title">No tasks found</span>
-        <span class="description">Check your Vikunja connection</span>
       </div>
     </div>
   {% endif %}
