@@ -1,0 +1,35 @@
+---
+strategy: polling
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+framework_version: 3.3.0
+serverless_language: ''
+polling_url: https://vikunja.miguelduarte.net/api/v1/tasks
+polling_headers: "CF-Access-Client-Id: 8e2b0f510d2120e528bb588e0946419c.access\r\nCF-Access-Client-Secret: cfast_rra9UDbamRDKazslfMkOPIHX3noXGovwcUvoPEnKa113c61e\r\nAuthorization: Bearer tk_b81ec14849041599d47858715b4611eae8e9a44b"
+polling_body: ''
+id: 461534
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
+oauth_authorize_url: ''
+oauth_token_url: ''
+oauth_scopes: ''
+oauth_scope_separator: ''
+oauth_refresh_url: ''
+oauth_auth_params: ''
+oauth_token_headers: ''
+oauth_token_site: ''
+oauth_token_params: ''
+oauth_token_request_auth_method: ''
+oauth_body_format: ''
+oauth_token_response_metadata: ''
+oauth_authorization_method: ''
+oauth_refresh_params: ''
+oauth_token_field_name: ''
+oauth_expiry_field_name: ''
+oauth_expiry_strategy: ''
+oauth_fixed_expiry_ms: ''
+name: Vikunja
+description: To‑do app to organize you life
+refresh_interval: 15
