@@ -1,9 +1,14 @@
 {%- comment -%}
   HALF HORIZONTAL (800x240) — Banner layout
   ════════════════════════════════════════════════════════════════
-  Wide and shallow. Uses columns with overflow to distribute
-  3-4 tasks side-by-side. Minimal details (title + progress only).
-  lg: prefixes scale text for TRMNL X.
+  Wide and shallow. Compact "Up Next" cards with priority badges,
+  truncated titles, and relative due dates. Side-by-side layout.
+  
+  COMPACT CARD PATTERN:
+  - Priority badge (emphasis levels)
+  - Task name (truncated, strikethrough if done)
+  - Due date (relative: "Today", "Tomorrow", "overdue by X")
+  - No numbering
 {%- endcomment -%}
 
 <div class="layout layout--col gap">
@@ -11,15 +16,52 @@
     <div class="columns" data-overflow-max-cols="2">
       <div class="column">
         {% for task in filtered_tasks limit: 4 %}
+          {%- comment -%} PRIORITY BADGE: emphasis 3=urgent, 2=high, 1=medium {%- endcomment -%}
+          {%- if task.priority == 4 -%}
+            {%- assign priority_class = "label--error" -%}
+            {%- assign priority_text = "!" -%}
+          {%- elsif task.priority == 3 -%}
+            {%- assign priority_class = "label--warning" -%}
+            {%- assign priority_text = "!!" -%}
+          {%- elsif task.priority == 2 -%}
+            {%- assign priority_class = "label--primary" -%}
+            {%- assign priority_text = "!" -%}
+          {%- else -%}
+            {%- assign priority_class = "label--small" -%}
+            {%- assign priority_text = "•" -%}
+          {%- endif -%}
+          
+          {%- comment -%} DUE DATE: relative format {%- endcomment -%}
+          {%- assign due_text = nil -%}
+          {%- if task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil -%}
+            {%- assign now_s = "now" | date: "%s" | plus: 0 -%}
+            {%- assign due_s = task.due_date | date: "%s" | plus: 0 -%}
+            {%- assign day_diff = due_s | minus: now_s | divided_by: 86400 -%}
+            {%- if day_diff == 0 -%}
+              {%- assign due_text = "Today" -%}
+            {%- elsif day_diff == 1 -%}
+              {%- assign due_text = "Tomorrow" -%}
+            {%- elsif day_diff < 0 -%}
+              {%- assign overdue_days = day_diff | abs -%}
+              {%- assign due_text = "overdue by " | append: overdue_days | append: "d" -%}
+            {%- else -%}
+              {%- assign due_text = task.due_date | date: "%d/%m" -%}
+            {%- endif -%}
+          {%- endif -%}
+          
           <div class="item">
             <div class="meta">
-              <span class="index">{{ forloop.index }}</span>
+              <span class="label {{ priority_class }}">{{ priority_text }}</span>
             </div>
             <div class="content">
-              <span class="title title--small lg:title--base" data-clamp="1">{{ task.title }}</span>
-              {% if task.percent_done > 0 %}
-                <span class="label label--small">{{ task.percent_done | times: 100 | round: 0 }}%</span>
-              {% endif %}
+              {%- if task.done -%}
+                <span class="title title--small lg:title--base text--gray-50" style="text-decoration: line-through;" data-clamp="1">{{ task.title }}</span>
+              {%- else -%}
+                <span class="title title--small lg:title--base" data-clamp="1">{{ task.title }}</span>
+              {%- endif -%}
+              {%- if due_text -%}
+                <span class="label label--small label--gray">{{ due_text }}</span>
+              {%- endif -%}
             </div>
           </div>
         {% endfor %}
