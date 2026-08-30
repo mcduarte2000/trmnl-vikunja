@@ -4,18 +4,19 @@
   Wide and shallow. Compact "Up Next" cards with priority badges,
   truncated titles, and relative due dates. Side-by-side layout.
   
-  COMPACT CARD PATTERN:
-  - Priority badge (emphasis levels)
-  - Task name (truncated, strikethrough if done)
-  - Due date (relative: "Today", "Tomorrow", "overdue by X")
-  - No numbering
+  SIMPLIFIED: Shows ALL tasks (no status filtering by default).
 {%- endcomment -%}
+
+{%- assign filtered_tasks = data -%}
+{%- assign tpv = tasks_per_view | plus: 0 -%}
+{%- if tpv < 1 -%}{%- assign tpv = 4 -%}{%- endif -%}
+{%- assign filtered_tasks = filtered_tasks | slice: 0, tpv -%}
 
 <div class="layout layout--col gap">
   {% if filtered_tasks.size > 0 %}
     <div class="columns" data-overflow-max-cols="2">
       <div class="column">
-        {% for task in filtered_tasks limit: 4 %}
+        {% for task in filtered_tasks %}
           {%- comment -%} PRIORITY BADGE: emphasis 3=urgent, 2=high, 1=medium {%- endcomment -%}
           {%- if task.priority == 4 -%}
             {%- assign priority_class = "label--error" -%}
