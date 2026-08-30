@@ -7,7 +7,7 @@ polling_verb: get
 framework_version: 3.3.0
 serverless_language: node
 polling_url: https://vikunja.miguelduarte.net/api/v1/tasks
-polling_headers: "CF-Access-Client-Id: 8e2b0f510d2120e528bb588e0946419c.access\r\nCF-Access-Client-Secret: cfast_rra9UDbamRDKazslfMkOPIHX3noXGovwcUvoPEnKa113c61e\r\nAuthorization: Bearer tk_b81ec14849041599d47858715b4611eae8e9a44b"
+polling_headers: "CF-Access-Client-Id: {{ cf_access_client_id }}\r\nCF-Access-Client-Secret: {{ cf_access_client_secret }}\r\nAuthorization: Bearer {{ api_token }}"
 polling_body: ''
 id: 461534
 oauth_enabled: 'false'
