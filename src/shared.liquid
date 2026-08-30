@@ -30,6 +30,11 @@ DISPLAY PATTERNS:
 - Task title: clamp to 1-2 lines depending on view size
 - Index numbers: use `forloop.index` in meta section of item component
 
+DON'T TOUCH:
+- title_bar structure below — custom Vikunja logo is inline SVG
+- title_bar stays in shared markup (used by all 4 views)
+- The SVG logo is base64-encoded, don't modify unless replacing
+
 CUSTOM PATTERNS IN USE:
 - Due date validation: `{% unless task.due_date == "0001-01-01T00:00:00Z" %}`
 - Progress calc: `{{ task.percent_done | times: 100 | round: 0 }}%`
