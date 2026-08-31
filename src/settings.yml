@@ -92,7 +92,7 @@ custom_fields:
   description: Project Number
   help_text: Hover your mouse over the link to the project in Vikunja to get the project number. Leave empty to show tasks from all projects.
   placeholder: '1'
-  default: '1'
+  default: ''
   optional: true
 - keyname: assignee_names
   field_type: text
