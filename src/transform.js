@@ -185,20 +185,9 @@ function buildRequestOptions(input, config) {
   return { headers: getPollingHeaders(input, config) };
 }
 
-/**
- * Fetch JSON from the Vikunja API.
- * Provides a clearer error message for authentication failures (401) so the
- * user knows to verify their API token and any Cloudflare Access credentials.
- */
 async function fetchJson(url, input, config) {
   const response = await fetch(url, buildRequestOptions(input, config));
   if (!response.ok) {
-    // Provide a more helpful message for common auth errors.
-    if (response.status === 401) {
-      throw new Error(
-        "Authentication failed (401 Unauthorized). Verify that the API token in `api_token` is correct and, if applicable, that Cloudflare Access credentials are valid."
-      );
-    }
     throw new Error(`Vikunja API error: ${response.status} ${response.statusText}`);
   }
   return response.json();
@@ -262,10 +251,9 @@ async function getKanbanBuckets(input, config) {
 
   const projectId = projectIds[0];
   const baseUrl = (config.base_url || "").replace(/\/$/, "");
-
   const views = await fetchJson(`${baseUrl}/api/v1/projects/${projectId}/views`, input, config);
-
   const kanbanView = (Array.isArray(views) ? views : []).find((view) => view.view_kind === "kanban");
+
   if (!kanbanView) {
     throw new Error("No Kanban view is available for the selected project");
   }
@@ -278,7 +266,6 @@ async function getKanbanBuckets(input, config) {
         input,
         config
       );
-
 
   return { buckets, doneBucketId: kanbanView.done_bucket_id };
 }
