@@ -185,9 +185,20 @@ function buildRequestOptions(input, config) {
   return { headers: getPollingHeaders(input, config) };
 }
 
+/**
+ * Fetch JSON from the Vikunja API.
+ * Provides a clearer error message for authentication failures (401) so the
+ * user knows to verify their API token and any Cloudflare Access credentials.
+ */
 async function fetchJson(url, input, config) {
   const response = await fetch(url, buildRequestOptions(input, config));
   if (!response.ok) {
+    // Provide a more helpful message for common auth errors.
+    if (response.status === 401) {
+      throw new Error(
+        "Authentication failed (401 Unauthorized). Verify that the API token in `api_token` is correct and, if applicable, that Cloudflare Access credentials are valid."
+      );
+    }
     throw new Error(`Vikunja API error: ${response.status} ${response.statusText}`);
   }
   return response.json();
