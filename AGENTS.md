@@ -27,9 +27,9 @@ Before changing behavior, consult:
 - Use the https://github.com/usetrmnl/trmnlp tool to help in development.
 
 ## Plugin Structure
-```
-- This is the plugin structure, you are not allowed to create more files than these:
 
+- This is the plugin structure, you are not allowed to create more files than these:
+```
 .
 ├── .github
 │   └── workflows
