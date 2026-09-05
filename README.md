@@ -1,13 +1,21 @@
-# Vikunja
+# Vikunja TRMNL Plugin
 
-A [TRMNL](https://trmnl.com) plugin for ePaper displays, connected by
-[GitHub Sync](https://help.trmnl.com/en/articles/15977899-github-sync): every save in TRMNL lands here as a commit.
+A **TRMNL** plugin that renders **Vikunja** tasks and Kanban boards on e‑paper displays. It connects to a Vikunja instance via the public API, fetches projects, buckets, and tasks, and presents them using TRMNL Framework 3.3 Liquid templates.
 
-<img width="150" alt="image" src="https://trmnl.com/images/brand/badges/light/works-with-trmnl/trmnl-badge-works-with-light.svg" />
+> **Built with AI assistance** – the core UI layout, documentation, and many implementation details were generated and refined using GitHub Copilot (OpenAI gpt‑oss‑120b).
+
+![Works with TRMNL badge](https://trmnl.com/images/brand/badges/light/works-with-trmnl/trmnl-badge-works-with-light.svg)
+
+### What the plugin does
+
+- Shows a **Task View** (grid or list) with title, description, assignee, due date, and progress.
+- Provides a **Kanban View** that displays Vikunja buckets as status columns, with task counts, priority‑based emphasis, and optional due‑date labels.
+- Supports four frame sizes (Full, Half Horizontal, Half Vertical, Quadrant) and adapts the layout for e‑paper constraints (top‑aligned content, minimal spacing, no custom CSS).
+- Handles empty columns, error states, and respects Vikunja’s bucket order.
 
 ### Develop locally
 
-Templates and settings live in [`src/`](src/), ready for [trmnlp](https://github.com/usetrmnl/trmnlp):
+Templates and settings live in the [`src/`](src/) directory and are rendered with the **TRMNL preview** tool:
 
 ```sh
 gem install trmnl_preview
@@ -16,4 +24,4 @@ trmnlp serve
 
 ### Discoverability
 
-Add the `trmnl` topic to this repo so other TRMNL plugin builders can find it.
+Add the `trmnl` topic to this repository so other TRMNL plugin developers can find it.
