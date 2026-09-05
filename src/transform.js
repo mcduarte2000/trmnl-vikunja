@@ -152,30 +152,49 @@ function filterByDueWithin(tasks, dueWithinDaysStr) {
   });
 }
 
-// ── Main: Fetch & Process ────────────────────────────────────────
+function getConfig(input) {
+  return input?.trmnl?.plugin_settings?.custom_fields_values || {};
+}
 
-/**
- * Main plugin entry point.
- * Fetches tasks from Vikunja and applies all user-configured filters.
- *
- * @param {Object} config - All form field values keyed by keyname
- * @returns {Promise<Object>} - { tasks: [...], meta: {...} }
- */
-async function fetchAndFilterTasks(config) {
-  // Build the API endpoint — base_url already excludes /api/v1
-  const apiUrl = `${config.base_url}/api/v1/tasks/all`;
+function getPollingHeaders(input, config) {
+  const encoded = input?.trmnl?.plugin_settings?.polling_headers || "";
+  const headers = {};
 
-  // Fetch with auth + optional CF headers
-  const response = await fetch(apiUrl, buildRequestOptions(config));
+  encoded.split("&").forEach((entry) => {
+    const separator = entry.indexOf("=");
+    if (separator > 0) {
+      headers[entry.slice(0, separator)] = decodeURIComponent(entry.slice(separator + 1));
+    }
+  });
 
+  if (!headers.Authorization && config.api_token) {
+    headers.Authorization = `Bearer ${config.api_token}`;
+  }
+
+  if (config.cf_access_client_id) {
+    headers["CF-Access-Client-Id"] = config.cf_access_client_id;
+  }
+  if (config.cf_access_client_secret) {
+    headers["CF-Access-Client-Secret"] = config.cf_access_client_secret;
+  }
+
+  return headers;
+}
+
+function buildRequestOptions(input, config) {
+  return { headers: getPollingHeaders(input, config) };
+}
+
+async function fetchJson(url, input, config) {
+  const response = await fetch(url, buildRequestOptions(input, config));
   if (!response.ok) {
     throw new Error(`Vikunja API error: ${response.status} ${response.statusText}`);
   }
+  return response.json();
+}
 
-  const data = await response.json();
-
-  // Vikunja returns an array of task objects directly
-  let tasks = Array.isArray(data) ? data : [];
+function applyTaskFilters(tasks, config) {
+  let filteredTasks = Array.isArray(tasks) ? tasks : [];
 
   // ── Apply filters in sequence ────────────────────────────────
   // Order matters: cheapest filters first to reduce work for expensive ones.
@@ -183,53 +202,144 @@ async function fetchAndFilterTasks(config) {
   // Search and assignee involve string matching — better on smaller sets.
 
   // 1. Status (done/undone/all) — fastest boolean check
-  tasks = filterByStatus(tasks, config.status_filter);
+  filteredTasks = filterByStatus(filteredTasks, config.status_filter);
 
   // 2. Favorites only — another fast boolean
-  tasks = filterByFavorites(tasks, config.show_favorites_only);
+  filteredTasks = filterByFavorites(filteredTasks, config.show_favorites_only);
 
   // 3. Priority threshold — numeric comparison
-  tasks = filterByPriority(tasks, config.priority_filter);
+  filteredTasks = filterByPriority(filteredTasks, config.priority_filter);
 
   // 4. Min progress — numeric conversion + comparison
-  tasks = filterByProgress(tasks, config.min_progress);
+  filteredTasks = filterByProgress(filteredTasks, config.min_progress);
 
   // 5. Due within N days — date parsing (moderate cost)
-  tasks = filterByDueWithin(tasks, config.due_within_days);
+  filteredTasks = filterByDueWithin(filteredTasks, config.due_within_days);
 
   // 6. Project IDs — array membership check
-  tasks = filterByProject(tasks, config.project_ids);
+  filteredTasks = filterByProject(filteredTasks, config.project_ids);
 
   // 7. Assignee names — nested array iteration with string comparison
-  tasks = filterByAssignee(tasks, config.assignee_names);
+  filteredTasks = filterByAssignee(filteredTasks, config.assignee_names);
 
   // 8. Search keywords — string matching with HTML stripping (most expensive)
-  tasks = filterBySearch(tasks, config.search_query);
+  filteredTasks = filterBySearch(filteredTasks, config.search_query);
 
   // ── Sort: most recently updated first ────────────────────────
   // Vikunja API usually returns in this order, but enforce it to be safe
-  tasks.sort((a, b) => new Date(b.updated) - new Date(a.updated));
+  filteredTasks.sort((a, b) => new Date(b.updated) - new Date(a.updated));
 
   // ── Limit to tasks_per_view ─────────────────────────────────
   const limit = parseInt(config.tasks_per_view, 10) || 6;
-  tasks = tasks.slice(0, limit);
+  return filteredTasks.slice(0, limit);
+}
 
+function extractBuckets(data) {
+  if (!Array.isArray(data)) return [];
+  return data.filter((item) => Array.isArray(item.tasks) && item.project_view_id);
+}
+
+function flattenBuckets(buckets) {
+  return buckets.flatMap((bucket) => bucket.tasks || []);
+}
+
+async function getKanbanBuckets(input, config) {
+  const projectIds = parseCommaList(config.project_ids);
+  if (projectIds.length !== 1) {
+    throw new Error("Kanban View requires exactly one project number");
+  }
+
+  const projectId = projectIds[0];
+  const baseUrl = (config.base_url || "").replace(/\/$/, "");
+  const views = await fetchJson(`${baseUrl}/api/v1/projects/${projectId}/views`, input, config);
+  const kanbanView = (Array.isArray(views) ? views : []).find((view) => view.view_kind === "kanban");
+
+  if (!kanbanView) {
+    throw new Error("No Kanban view is available for the selected project");
+  }
+
+  const fromPoll = extractBuckets(input.data);
+  const buckets = fromPoll.length > 0
+    ? fromPoll
+    : await fetchJson(
+        `${baseUrl}/api/v1/projects/${projectId}/views/${kanbanView.id}/tasks`,
+        input,
+        config
+      );
+
+  return { buckets, doneBucketId: kanbanView.done_bucket_id };
+}
+
+function buildKanbanColumns(buckets, doneBucketId, config) {
+  const limit = parseInt(config.tasks_per_view, 10) || 6;
+  let remaining = limit;
+
+  return buckets.map((bucket) => {
+    const filteredTasks = applyTaskFilters(bucket.tasks || [], config);
+    const tasks = filteredTasks.slice(0, Math.max(remaining, 0));
+    remaining -= tasks.length;
+
+    return {
+      id: bucket.id,
+      title: bucket.title,
+      done: bucket.id === doneBucketId,
+      tasks,
+    };
+  });
+}
+
+function buildMeta(tasks, config) {
   return {
-    tasks,
-    meta: {
-      total_shown: tasks.length,
-      filters_applied: {
-        status: config.status_filter,
-        priority_min: config.priority_filter,
-        project_ids: config.project_ids || "all",
-        assignee_names: config.assignee_names || "all",
-        search: config.search_query || "none",
-        favorites_only: config.show_favorites_only,
-        min_progress: config.min_progress,
-        due_within_days: config.due_within_days,
-      },
+    total_shown: tasks.length,
+    filters_applied: {
+      status: config.status_filter,
+      priority_min: config.priority_filter,
+      project_ids: config.project_ids || "all",
+      assignee_names: config.assignee_names || "all",
+      search: config.search_query || "none",
+      favorites_only: config.show_favorites_only,
+      min_progress: config.min_progress,
+      due_within_days: config.due_within_days,
     },
   };
 }
 
-module.exports = { fetchAndFilterTasks };
+async function transform(input) {
+  const config = getConfig(input);
+
+  if (config.view_mode === "kanban") {
+    try {
+      const kanbanData = await getKanbanBuckets(input, config);
+      const kanbanColumns = buildKanbanColumns(kanbanData.buckets, kanbanData.doneBucketId, config);
+      const tasks = flattenBuckets(kanbanColumns);
+
+      return {
+        ...input,
+        data: tasks,
+        view_mode: "kanban",
+        kanban_columns: kanbanColumns,
+        kanban_error: "",
+        meta: buildMeta(tasks, config),
+      };
+    } catch (error) {
+      return {
+        ...input,
+        data: [],
+        view_mode: "kanban",
+        kanban_columns: [],
+        kanban_error: error.message,
+      };
+    }
+  }
+
+  const tasks = applyTaskFilters(input.data, config);
+
+  return {
+    ...input,
+    data: tasks,
+    view_mode: "task",
+    kanban_columns: [],
+    kanban_error: "",
+    meta: buildMeta(tasks, config),
+  };
+}

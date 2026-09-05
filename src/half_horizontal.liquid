@@ -11,12 +11,52 @@
   - No numbering
 {%- endcomment -%}
 
+{% if view_mode == "kanban" %}
+  {% if kanban_error != "" %}
+    <div class="item">
+      <div class="meta"></div>
+      <div class="content">
+        <span class="title">Kanban unavailable</span>
+        <span class="description">{{ kanban_error }}</span>
+      </div>
+    </div>
+  {% elsif kanban_columns.size > 0 %}
+    <div class="layout layout--col layout--top flex--top gap">
+      <div class="flex flex--row flex--top gap">
+        {% for column in kanban_columns %}
+          <div class="grow flex flex--col flex--left px--small">
+            <span class="title title--small text--left">{{ column.title | upcase }} ({{ column.tasks.size }})</span>
+            <div class="flex flex--col gap--small mt--small">
+              {% for task in column.tasks %}
+                <div class="item item--emphasis-3">
+                  <div class="meta"></div>
+                  <div class="content">
+                    {% if column.done %}<span class="title title--small text--gray-50" style="text-decoration: line-through;" data-clamp="1">{{ task.title }}</span>{% else %}<span class="title title--small" data-clamp="1">{{ task.title }}</span>{% endif %}
+                    {% if column.done == false and task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
+                      <span class="label label--small label--gray">due {{ task.due_date | date: "%d %b" }}</span>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% unless forloop.last %}<div class="divider--v"></div>{% endunless %}
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    <div class="item">
+      <div class="meta"></div>
+      <div class="content"><span class="title">No Kanban tasks</span></div>
+    </div>
+  {% endif %}
+{% else %}
 {%- assign filtered_tasks = data -%}
 {%- assign tpv = tasks_per_view | plus: 0 -%}
 {%- if tpv < 1 -%}{%- assign tpv = 4 -%}{%- endif -%}
 {%- assign filtered_tasks = filtered_tasks | slice: 0, tpv -%}
 
-<div class="layout layout--col gap">
+  <div class="layout layout--col layout--top gap">
   {% if filtered_tasks.size > 0 %}
     <div class="columns" data-overflow-max-cols="2">
       <div class="column">
@@ -77,5 +117,7 @@
     </div>
   {% endif %}
 </div>
+
+{% endif %}
 
 {{ title_bar }}
