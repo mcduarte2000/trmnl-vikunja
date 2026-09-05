@@ -4,6 +4,9 @@
         "true": true,
         "gem": true,
         "/opt/homebrew/lib/ruby/gems/4.0.0/bin/trmnlp": true,
-        "/opt/homebrew/lib/ruby/gems/4.0.0/gems/trmnl_preview-0.11.0/bin/trmnlp": true
+        "/opt/homebrew/lib/ruby/gems/4.0.0/gems/trmnl_preview-0.11.0/bin/trmnlp": true,
+        "git add": true,
+        "git commit": true,
+        "git push": true
     }
 }
