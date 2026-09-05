@@ -65,24 +65,6 @@ custom_fields:
 
     '
   optional: true
-- keyname: project_ids
-  field_type: multi_string
-  name: Projects
-  description: Filter by one or more Vikunja project numbers
-  help_text: 'Hover over a project name in the left menu in Vikunja to see its project number. Enter one or more project numbers separated by commas. Leave empty to show tasks from all projects.
-
-    '
-  placeholder: '1,2'
-  default: ''
-  optional: true
-- keyname: view_mode
-  field_type: select
-  name: View Mode
-  description: Choose how tasks are displayed
-  options:
-  - Task View: task
-  - Kanban View: kanban
-  default: task
 - keyname: status_filter
   field_type: select
   name: Task Status
@@ -104,6 +86,14 @@ custom_fields:
   - Highest: 4
   - Urgent: 5
   default: '0'
+- keyname: multi_string_0385
+  field_type: multi_string
+  name: Multi String
+  description: Project Number
+  help_text: Hover your mouse over the link to the project in Vikunja to get the project number. Leave empty to show tasks from all projects.
+  placeholder: '1'
+  default: ''
+  optional: true
 - keyname: assignee_names
   field_type: text
   name: Assignee Names
@@ -155,6 +145,15 @@ custom_fields:
   min: 1
   max: 10
   default: 6
+# Added view mode selection to support Kanban view
+- keyname: view_mode
+  field_type: select
+  name: View Mode
+  description: Choose how tasks are displayed
+  options:
+  - Task View: task
+  - Kanban View: kanban
+  default: task
 name: Vikunja
 description: To‑do app to organize you life
 refresh_interval: 15
