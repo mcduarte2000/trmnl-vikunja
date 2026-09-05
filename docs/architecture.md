@@ -198,6 +198,23 @@ Never display the Vikunja no-date sentinel. Compact views may use `Today`, `Tomo
 
 ## Security and reliability
 
+### Configuration guidelines (AI‑friendly)
+
+* **Never hard‑code secrets or URLs in `src/settings.yml`.**
+  * The file is part of the public plugin contract and may be inspected by the TRMNL runtime or other developers. Hard‑coded values would be shipped to every user and could expose credentials.
+  * Instead, use the **templating placeholders** (`{{ base_url }}`, `{{ api_token }}`, `{{ cf_access_client_id }}`, `{{ cf_access_client_secret }}`) that are automatically replaced with the values the user enters on the TRMNL website.
+
+* **`.trmnlp.yml` is a *development‑only* configuration file.**
+  * It lives outside the plugin package and is read **only** by the local `trmnlp serve` preview command.
+  * Values placed here are injected into the `config` object that `src/transform.js` receives during preview. They are **not** bundled into the final plugin and therefore do not affect production deployments.
+  * When documenting or writing AI prompts, make it clear that `.trmnlp.yml` is for local testing and should contain the raw credential values (no `CF-Access-Client-Id:` prefix, just the ID itself).
+
+* **AI assistants should respect these rules** when generating code or documentation:
+  * Reference the placeholders in `settings.yml` rather than concrete strings.
+  * When showing example `.trmnlp.yml` content, use dummy values and note that they are *only* for local preview.
+  * Avoid suggesting edits that embed actual tokens or URLs directly into `settings.yml`.
+
+Following these guidelines ensures that the plugin remains secure, portable, and behaves correctly both in preview and in production.
 - Treat API tokens and Cloudflare credentials as secrets.
 - Do not log or render authorization headers.
 - Do not include credentials in `meta`, task objects, or generated markup.
