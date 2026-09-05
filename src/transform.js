@@ -262,21 +262,31 @@ async function getKanbanBuckets(input, config) {
 
   const projectId = projectIds[0];
   const baseUrl = (config.base_url || "").replace(/\/$/, "");
-  const views = await fetchJson(`${baseUrl}/api/v1/projects/${projectId}/views`, input, config);
-  const kanbanView = (Array.isArray(views) ? views : []).find((view) => view.view_kind === "kanban");
+  console.log("[DEBUG] baseUrl:", baseUrl);
+  console.log("[DEBUG] projectId:", projectId);
 
+  const views = await fetchJson(`${baseUrl}/api/v1/projects/${projectId}/views`, input, config);
+  console.log("[DEBUG] fetched views (count):", Array.isArray(views) ? views.length : 0);
+  console.log("[DEBUG] views payload:", views);
+
+  const kanbanView = (Array.isArray(views) ? views : []).find((view) => view.view_kind === "kanban");
   if (!kanbanView) {
     throw new Error("No Kanban view is available for the selected project");
   }
+  console.log("[DEBUG] kanbanView.id:", kanbanView.id);
 
   const fromPoll = extractBuckets(input.data);
   const buckets = fromPoll.length > 0
     ? fromPoll
-    : await fetchJson(
-        `${baseUrl}/api/v1/projects/${projectId}/views/${kanbanView.id}/tasks`,
-        input,
-        config
-      );
+    : await (async () => {
+        const tasksUrl = `${baseUrl}/api/v1/projects/${projectId}/views/${kanbanView.id}/tasks`;
+        console.log("[DEBUG] fetching tasks URL:", tasksUrl);
+        return fetchJson(tasksUrl, input, config);
+      })();
+
+  console.log("[DEBUG] buckets count:", Array.isArray(buckets) ? buckets.length : 0);
+  // Optionally log bucket structure for deeper inspection (commented to avoid huge output)
+  // console.log("[DEBUG] buckets payload:", buckets);
 
   return { buckets, doneBucketId: kanbanView.done_bucket_id };
 }
