@@ -23,6 +23,41 @@ Before changing behavior, consult:
 - Keep presentation and layout decisions in the Liquid templates.
 - Preserve the shared title bar in `src/shared.liquid`.
 - Do not add custom CSS when Framework 3.3 utilities can express the requirement.
+- Do not change settings.xml. Only the user is allowed to change this file directly in TRMNL.
+- Use the https://github.com/usetrmnl/trmnlp tool to help in development.
+
+## Plugin Structure
+```
+- This is the plugin structure, you are not allowed to create more files than these:
+
+.
+├── .github
+│   └── workflows
+│       └── trmnl.yml
+├── .gitignore
+├── .trmnlp.yml
+├── bin
+│   └── trmnlp
+└── src
+    ├── full.liquid
+    ├── half_horizontal.liquid
+    ├── half_vertical.liquid
+    ├── quadrant.liquid
+    ├── shared.liquid
+    └── settings.yml
+```
+
+| File | Purpose |
+|---|---|
+| `.github/workflows/trmnl.yml` | GitHub Actions workflow — lints every PR, deploys to TRMNL on `main` |
+| `.gitignore` | Keeps `trmnlp build` output out of version control |
+| `.trmnlp.yml` | Local dev-server config — not uploaded to TRMNL |
+| `src/full.liquid` | Markup for the full screen |
+| `src/half_horizontal.liquid` | Top or bottom half of a stacked mashup |
+| `src/half_vertical.liquid` | Left or right half of a side-by-side mashup |
+| `src/quadrant.liquid` | One quarter of a 2x2 mashup |
+| `src/shared.liquid` | Reusable markup included by the other templates |
+| `src/settings.yml` | Plugin configuration — uploaded to TRMNL |
 
 ## View modes
 
