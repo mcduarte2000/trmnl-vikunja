@@ -1,7 +1,7 @@
 # Local-only configuration for trmnl_preview.
 # Plugin settings and templates remain under src/.
 custom_fields:
-  api_token: "tk_825c6db79170a07ac5c2dfd7dd21cd554139a6ef"
+  api_token: "tk_56d06b95c30a80e4d493b1a3eeadf10c3a73856e"
   # Updated to the public Vikunja endpoint without a trailing slash.
   # Removing the trailing slash prevents double‑slash URLs (e.g. `...net//api/...`).
   base_url: "https://vikunja.miguelduarte.net"
@@ -14,4 +14,5 @@ variables:
   trmnl:
     plugin_settings:
       # Use the base_url variable to build the polling URL, ensuring no double slash.
-      polling_url: "{{ base_url }}/api/v1/projects/3/tasks"
+      # Use the project‑specific tasks endpoint to ensure JSON responses for Kanban view.
+      polling_url: "{{ base_url }}/api/v1/projects/{{ project_ids }}/tasks"

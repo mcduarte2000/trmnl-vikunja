@@ -6,7 +6,8 @@ static_data: ''
 polling_verb: get
 framework_version: 3.3.0
 serverless_language: node
-polling_url: "{{ base_url }}/api/v1/tasks"
+# Use the project‑specific tasks endpoint to ensure JSON responses for Kanban view.
+polling_url: "{{ base_url }}/api/v1/projects/{{ project_ids }}/tasks"
 polling_headers: CF-Access-Client-Id={{ cf_access_client_id }}&CF-Access-Client-Secret={{ cf_access_client_secret }}&Authorization=Bearer {{ api_token }}
 polling_body: ''
 id: 461534
