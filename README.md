@@ -22,6 +22,22 @@ gem install trmnl_preview
 trmnlp serve
 ```
 
+#### Configuration note
+
+The plugin relies on the **`base_url`** variable to build the polling URL. **Do not use a hard‑coded URL**; instead ensure that `base_url` does **not** contain a trailing slash. The polling URL is constructed as:
+
+```yaml
+polling_url: "{{ base_url }}/api/v1/tasks"
+```
+
+If `base_url` ends with a slash (e.g., `https://vikunja.miguelduarte.net/`) the resulting URL will contain a double slash (`//api/...`) which can cause the request to hit the Vikunja web front‑end instead of the API, leading to HTML responses and subsequent 401 errors. Set `base_url` to the plain domain, for example:
+
+```yaml
+base_url: "https://vikunja.miguelduarte.net"
+```
+
+All other variables (`api_token`, `cf_access_client_id`, etc.) remain configurable as before.
+
 ### Discoverability
 
 Add the `trmnl` topic to this repository so other TRMNL plugin developers can find it.
