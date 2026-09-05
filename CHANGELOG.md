@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [v1.0.1] - 2026-09-05
 - Align Kanban views (Full, Half Horizontal, Half Vertical, Quadrant) to top.
 - Added left‑alignment for Half Vertical columns.
 - Enabled word‑wrap for Quadrant task titles by rendering titles in block elements without `data-clamp="1"`.
