@@ -28,7 +28,7 @@ Before changing behavior, consult:
 
 ## Plugin Structure
 
-- This is the plugin structure, you are not allowed to create more files than these:
+This is the plugin structure, you are not allowed to create more files than these:
 ```
 .
 ├── .github
@@ -58,6 +58,149 @@ Before changing behavior, consult:
 | `src/quadrant.liquid` | One quarter of a 2x2 mashup |
 | `src/shared.liquid` | Reusable markup included by the other templates |
 | `src/settings.yml` | Plugin configuration — uploaded to TRMNL |
+
+## Creating a New Plugin
+
+You can start building a plugin locally, then `push` it to the TRMNL server for display on your device.
+
+```sh
+trmnlp init [my_plugin]  # generate
+cd [my_plugin]
+trmnlp serve             # develop locally
+trmnlp login             # authenticate
+trmnlp push              # upload
+```
+
+## Modifying an Existing Plugin
+
+If you have built a plugin with the web-based editor, you can `clone` it, work on it locally, and `push` changes back to the server.
+
+```sh
+trmnlp login                   # authenticate
+trmnlp clone [my_plugin] [id]  # first download
+cd [my_plugin]
+trmnlp serve                   # develop locally
+trmnlp push                    # upload
+```
+
+## Commands
+
+| Command | Description |
+|---|---|
+| `trmnlp init NAME` | Start a new plugin project |
+| `trmnlp serve` | Start a local dev server |
+| `trmnlp build` | Generate static HTML files, or PNGs with `--png` |
+| `trmnlp lint` | Check plugin code against TRMNL best practices |
+| `trmnlp login` | Authenticate with TRMNL server |
+| `trmnlp list` | List private plugins from TRMNL server |
+| `trmnlp clone NAME ID` | Copy a plugin project from TRMNL server |
+| `trmnlp pull` | Download latest plugin settings from TRMNL server |
+| `trmnlp push` | Upload latest plugin settings to TRMNL server |
+| `trmnlp version` | Show version |
+
+`trmnlp lint` exits non-zero when it finds issues, so you can gate CI on it. Run `trmnlp help` for all flags.
+
+## Building Static Files
+
+`trmnlp build` renders every view to a static file under `_build/` — handy for exporting a snapshot or feeding the output into another pipeline. Run it from inside a plugin project:
+
+```sh
+trmnlp build        # writes _build/full.html, _build/half_horizontal.html, ...
+trmnlp build --png  # also writes a PNG for each view
+```
+
+`--png` renders each view through the same screenshot pipeline `serve` uses. By default a PNG is 800×480 at the bit depth declared by the markup's `screen--Nbit` class (1-bit if none). Override any of those:
+
+```sh
+trmnlp build --png --color-depth 2
+```
+
+| Flag | Purpose |
+|---|---|
+| `--png` | Render a PNG per view alongside the HTML |
+| `--width` | PNG width in pixels (default 800) |
+| `--height` | PNG height in pixels (default 480) |
+| `--color-depth` | PNG bit depth — 1-8 — overriding the markup |
+
+`--width`, `--height`, and `--color-depth` apply only with `--png`. PNG rendering needs Firefox and ImageMagick installed; plain `trmnlp build` needs neither.
+
+## Authentication
+
+The `trmnlp login` command saves your API key to `~/.config/trmnlp/config.yml`.
+
+If an environment variable is more convenient (for example in a CI/CD pipeline), you can set `$TRMNL_API_KEY` instead.
+
+## Continuous Integration
+
+`trmnlp init` and `trmnlp clone` scaffold a `.github/workflows/trmnl.yml`
+workflow and initialize a Git repository, so a fresh project is ready to push
+to GitHub. The workflow runs in GitHub Actions without `trmnlp login` — set the
+`TRMNL_API_KEY` environment variable and it's used in place of the saved
+config. Add it as a repository secret to activate the workflow; it looks like
+this:
+
+```yaml
+name: TRMNL
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "4.0"
+      - run: gem install trmnl_preview
+      - run: trmnlp lint
+
+  push:
+    needs: lint
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "4.0"
+      - run: gem install trmnl_preview
+      - run: trmnlp push --force
+        env:
+          TRMNL_API_KEY: ${{ secrets.TRMNL_API_KEY }}
+```
+
+The `lint` job gates every pull request — `trmnlp lint` exits non-zero on
+issues, so a failing check blocks the merge. The `push` job uploads to TRMNL
+only on `main`.
+
+> **Make sure `src/settings.yml` has an `id`.** `trmnlp push` updates the
+> plugin with that id; without one it creates a *new* plugin on every run.
+> Projects made with `trmnlp clone` or `trmnlp pull` already have it.
+
+## Running trmnlp
+
+The `bin/trmnlp` script is provided as a convenience. It will use the local Ruby gem if available, falling back to the `trmnl/trmnlp` Docker image.
+
+You can modify the `bin/trmnlp` script to set up environment variables (plugin secrets, etc.) before running the server.
+
+**Gem or Docker?** Install the gem if you already have Ruby >= 3.4 — it has the fastest startup. Use Docker for zero local setup.
+
+### Installing via RubyGems
+
+Prerequisites:
+
+- Ruby >= 3.4
+- For PNG rendering (optional):
+  - Firefox
+  - ImageMagick
+
+```sh
+gem install trmnl_preview
+trmnlp serve
+```
 
 ## View modes
 
