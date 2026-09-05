@@ -7,7 +7,7 @@ polling_verb: get
 framework_version: 3.3.0
 serverless_language: node
 polling_url: "{{ base_url }}/api/v1/tasks"
-polling_headers: "CF-Access-Client-Id={{ cf_access_client_id }}&CF-Access-Client-Secret={{ cf_access_client_secret }}&Authorization=Bearer {{ api_token }}"
+polling_headers: CF-Access-Client-Id={{ cf_access_client_id }}&CF-Access-Client-Secret={{ cf_access_client_secret }}&Authorization=Bearer {{ api_token }}
 polling_body: ''
 id: 461534
 oauth_enabled: 'false'
