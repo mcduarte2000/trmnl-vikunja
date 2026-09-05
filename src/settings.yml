@@ -6,8 +6,6 @@ static_data: ''
 polling_verb: get
 framework_version: 3.3.0
 serverless_language: node
-# Use the full API endpoint directly to avoid any trailing‑slash issues.
-# Use the base_url variable to construct the polling URL. This avoids double‑slash issues.
 polling_url: "{{ base_url }}/api/v1/tasks"
 polling_headers: CF-Access-Client-Id={{ cf_access_client_id }}&CF-Access-Client-Secret={{ cf_access_client_secret }}&Authorization=Bearer {{ api_token }}
 polling_body: ''
