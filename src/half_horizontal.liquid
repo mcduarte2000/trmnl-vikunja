@@ -1,70 +1,49 @@
 {%- comment -%}
   HALF HORIZONTAL (800x240) — Banner layout
   ════════════════════════════════════════════════════════════════
-  Wide and shallow. Compact "Up Next" cards with item meta emphasis
-  for priority, truncated titles, and relative due dates.
-  
-  COMPACT CARD PATTERN:
-  - Item with meta emphasis class based on priority (empty meta)
-  - Task name (truncated, strikethrough if done)
-  - Due date (relative: "Today", "Tomorrow", "overdue by X")
-  - No numbering
+  Shows compact cards when Task View is selected.
+  When `view_mode` is "kanban" this template renders horizontal Kanban columns.
 {%- endcomment -%}
 
-{%- assign filtered_tasks = data -%}
-{%- assign tpv = tasks_per_view | plus: 0 -%}
-{%- if tpv < 1 -%}{%- assign tpv = 4 -%}{%- endif -%}
-{%- assign filtered_tasks = filtered_tasks | slice: 0, tpv -%}
+{%- assign view_name = "half_horizontal" -%}
 
-<div class="layout layout--col gap">
-  {% if filtered_tasks.size > 0 %}
-    <div class="columns" data-overflow-max-cols="2">
-      <div class="column">
-        {% for task in filtered_tasks %}
-          {%- comment -%} PRIORITY: emphasis 3=urgent, 2=high, 1=medium {%- endcomment -%}
-          {%- if task.priority == 4 -%}
-            {%- assign emphasis_class = "item--meta-emphasis-3" -%}
-          {%- elsif task.priority == 3 -%}
-            {%- assign emphasis_class = "item--meta-emphasis-2" -%}
-          {%- elsif task.priority == 2 -%}
-            {%- assign emphasis_class = "item--meta-emphasis-1" -%}
-          {%- else -%}
-            {%- assign emphasis_class = "" -%}
-          {%- endif -%}
-          
-          {%- comment -%} DUE DATE: relative format {%- endcomment -%}
-          {%- assign due_text = nil -%}
-          {%- if task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil -%}
-            {%- assign now_s = "now" | date: "%s" | plus: 0 -%}
-            {%- assign due_s = task.due_date | date: "%s" | plus: 0 -%}
-            {%- assign day_diff = due_s | minus: now_s | divided_by: 86400 -%}
-            {%- if day_diff == 0 -%}
-              {%- assign due_text = "Today" -%}
-            {%- elsif day_diff == 1 -%}
-              {%- assign due_text = "Tomorrow" -%}
-            {%- elsif day_diff < 0 -%}
-              {%- assign overdue_days = day_diff | abs -%}
-              {%- assign due_text = "overdue by " | append: overdue_days | append: "d" -%}
-            {%- else -%}
-              {%- assign due_text = task.due_date | date: "%d/%m" -%}
-            {%- endif -%}
-          {%- endif -%}
-          
-          <div class="item {{ emphasis_class }}">
-            <div class="meta"></div>
-            <div class="content">
-              {%- if task.done -%}
-                <span class="title title--small lg:title--base text--gray-50" style="text-decoration: line-through;" data-clamp="1">{{ task.title }}</span>
-              {%- else -%}
-                <span class="title title--small lg:title--base" data-clamp="1">{{ task.title }}</span>
-              {%- endif -%}
-              {%- if due_text -%}
-                <div class="flex gap--small">
-                  <span class="label label--small label--gray">{{ due_text }}</span>
+{% if view_mode == "kanban" %}
+  {% if kanban_error != "" %}
+    <div class="layout layout--col flex--top gap">
+      <div class="item">
+        <div class="meta"></div>
+        <div class="content">
+          <span class="title">Kanban unavailable</span>
+          <span class="description">{{ kanban_error }}</span>
+        </div>
+      </div>
+    </div>
+  {% elsif data.buckets and data.buckets.size > 0 %}
+    {%- assign filtered_tasks = data.buckets | map: "tasks" | flatten -%}
+    <div class="layout layout--col layout--top gap">
+      <div class="flex flex--row flex--top gap">
+        {% for column in data.buckets %}
+          <div class="grow flex flex--col flex--left px--small">
+            <span class="title title--small lg:title--base text--left">{{ column.title | upcase }} ({{ column.tasks.size }})</span>
+            <div class="flex flex--col gap--small mt--small">
+              {% for task in column.tasks %}
+                <div class="item">
+                  <div class="meta"></div>
+                  <div class="content">
+                    {% if column.done or task.done %}
+                      <span class="title title--small text--gray-50" style="text-decoration: line-through;" data-clamp="1">{{ task.title }}</span>
+                    {% else %}
+                      <span class="title title--small" data-clamp="1">{{ task.title }}</span>
+                    {% endif %}
+                    {% if column.done == false and task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
+                      <span class="label label--small label--gray">due {{ task.due_date | date: "%d %b" }}</span>
+                    {% endif %}
+                  </div>
                 </div>
-              {%- endif -%}
+              {% endfor %}
             </div>
           </div>
+          {% unless forloop.last %}<div class="divider--v"></div>{% endunless %}
         {% endfor %}
       </div>
     </div>
@@ -72,10 +51,78 @@
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="title">No tasks found</span>
+        <span class="title">No Kanban tasks</span>
       </div>
     </div>
   {% endif %}
-</div>
+{% else %}
+  {%- comment -%}Task View rendering (original) {%- endcomment -%}
+  {%- assign filtered_tasks = data -%}
+  {%- assign tpv = tasks_per_view | plus: 0 -%}
+  {%- if tpv < 1 -%}{%- assign tpv = 4 -%}{%- endif -%}
+  {%- assign filtered_tasks = filtered_tasks | slice: 0, tpv -%}
+
+  <div class="layout layout--col gap">
+    {% if filtered_tasks.size > 0 %}
+      <div class="columns" data-overflow-max-cols="2">
+        <div class="column">
+          {% for task in filtered_tasks %}
+            {%- comment -%} PRIORITY: emphasis 3=urgent, 2=high, 1=medium {%- endcomment -%}
+            {%- if task.priority == 4 -%}
+              {%- assign emphasis_class = "item--meta-emphasis-3" -%}
+            {%- elsif task.priority == 3 -%}
+              {%- assign emphasis_class = "item--meta-emphasis-2" -%}
+            {%- elsif task.priority == 2 -%}
+              {%- assign emphasis_class = "item--meta-emphasis-1" -%}
+            {%- else -%}
+              {%- assign emphasis_class = "" -%}
+            {%- endif -%}
+            
+            {%- comment -%} DUE DATE: relative format {%- endcomment -%}
+            {%- assign due_text = nil -%}
+            {%- if task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil -%}
+              {%- assign now_s = "now" | date: "%s" | plus: 0 -%}
+              {%- assign due_s = task.due_date | date: "%s" | plus: 0 -%}
+              {%- assign day_diff = due_s | minus: now_s | divided_by: 86400 -%}
+              {%- if day_diff == 0 -%}
+                {%- assign due_text = "Today" -%}
+              {%- elsif day_diff == 1 -%}
+                {%- assign due_text = "Tomorrow" -%}
+              {%- elsif day_diff < 0 -%}
+                {%- assign overdue_days = day_diff | abs -%}
+                {%- assign due_text = "overdue by " | append: overdue_days | append: "d" -%}
+              {%- else -%}
+                {%- assign due_text = task.due_date | date: "%d/%m" -%}
+              {%- endif -%}
+            {%- endif -%}
+            
+            <div class="item {{ emphasis_class }}">
+              <div class="meta"></div>
+              <div class="content">
+                {%- if task.done -%}
+                  <span class="title title--small lg:title--base text--gray-50" style="text-decoration: line-through;" data-clamp="1">{{ task.title }}</span>
+                {%- else -%}
+                  <span class="title title--small lg:title--base" data-clamp="1">{{ task.title }}</span>
+                {%- endif -%}
+                {%- if due_text -%}
+                  <div class="flex gap--small">
+                    <span class="label label--small label--gray">{{ due_text }}</span>
+                  </div>
+                {%- endif -%}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <div class="item">
+        <div class="meta"></div>
+        <div class="content">
+          <span class="title">No tasks found</span>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
 
 {{ title_bar }}

@@ -1,53 +1,104 @@
 {%- comment -%}
   FULL VIEW (800x480)
   ════════════════════════════════════════════════════════════════
-  Shows 6-8 tasks in a 2-column grid layout.
-  Each task displays: title (clamped), assignee, due date, progress %.
-  Uses lg: prefixes to scale up text on TRMNL X (1040x780).
-  
-  SIMPLIFIED: Shows ALL tasks (no status filtering by default).
+  Shows 6-8 tasks in a 2-column grid layout when Task View is selected.
+  When `view_mode` is set to "kanban", this template renders the Kanban board
+  using the shared layout utilities.
 {%- endcomment -%}
 
-{%- assign filtered_tasks = data -%}
-{%- assign tpv = tasks_per_view | plus: 0 -%}
-{%- if tpv < 1 -%}{%- assign tpv = 8 -%}{%- endif -%}
-{%- assign filtered_tasks = filtered_tasks | slice: 0, tpv -%}
+{%- assign view_name = "full" -%}
 
-<div class="layout layout--col gap">
-  {% if filtered_tasks.size > 0 %}
-    <div class="grid grid--cols-2">
-      {% for task in filtered_tasks %}
-        <div class="item">
-          <div class="meta">
-            <span class="index">{{ forloop.index }}</span>
-          </div>
-          <div class="content">
-            <span class="title title--small lg:title--base" data-clamp="1">{{ task.title }}</span>
-            {% if task.description != "" and task.description != nil %}
-              <span class="description" data-clamp="1">{{ task.description | strip_html | truncate: 40 }}</span>
-            {% endif %}
-            {% if task.assignees.size > 0 %}
-              <span class="description">{{ task.assignees[0].name }}</span>
-            {% endif %}
-            {% if task.due_date != "0001-01-01T00:00:00Z" %}
-              <span class="label label--small label--gray">{{ task.due_date | date: "%b %d" }}</span>
-            {% endif %}
-            {% if task.percent_done > 0 %}
-              <span class="label label--small">{{ task.percent_done | times: 100 | round: 0 }}%</span>
-            {% endif %}
-          </div>
+{% if view_mode == "kanban" %}
+  {% if kanban_error != "" %}
+    <div class="layout layout--col flex--top gap">
+      <div class="item">
+        <div class="meta"></div>
+        <div class="content">
+          <span class="title">Kanban unavailable</span>
+          <span class="description">{{ kanban_error }}</span>
         </div>
-      {% endfor %}
+      </div>
+    </div>
+  {% elsif data.buckets and data.buckets.size > 0 %}
+    {%- assign filtered_tasks = data.buckets | map: "tasks" | flatten -%}
+    <div class="layout layout--col layout--top gap">
+      <div class="flex flex--row flex--top gap">
+        {% for column in data.buckets %}
+          <div class="grow flex flex--col flex--left px--small">
+            <span class="title title--small lg:title--base text--left">{{ column.title | upcase }} ({{ column.tasks.size }})</span>
+            <div class="flex flex--col gap--small mt--small">
+              {% for task in column.tasks %}
+                <div class="item">
+                  <div class="meta"></div>
+                  <div class="content">
+                    {% if column.done or task.done %}
+                      <span class="title title--small text--gray-50" style="text-decoration: line-through;" data-clamp="1">{{ task.title }}</span>
+                    {% else %}
+                      <span class="title title--small" data-clamp="1">{{ task.title }}</span>
+                    {% endif %}
+                    {% if column.done == false and task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
+                      <span class="label label--small label--gray">due {{ task.due_date | date: "%d %b" }}</span>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% unless forloop.last %}<div class="divider--v"></div>{% endunless %}
+        {% endfor %}
+      </div>
     </div>
   {% else %}
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="title">No tasks found</span>
-        <span class="description">Check your filter settings</span>
+        <span class="title">No Kanban tasks</span>
       </div>
     </div>
   {% endif %}
-</div>
+{% else %}
+  {%- comment -%}Task View rendering (unchanged) {%- endcomment -%}
+  {%- assign filtered_tasks = data -%}
+  {%- assign tpv = tasks_per_view | plus: 0 -%}
+  {%- if tpv < 1 -%}{%- assign tpv = 8 -%}{%- endif -%}
+  {%- assign filtered_tasks = filtered_tasks | slice: 0, tpv -%}
+
+  <div class="layout layout--col gap">
+    {% if filtered_tasks.size > 0 %}
+      <div class="grid grid--cols-2">
+        {% for task in filtered_tasks %}
+          <div class="item">
+            <div class="meta">
+              <span class="index">{{ forloop.index }}</span>
+            </div>
+            <div class="content">
+              <span class="title title--small lg:title--base" data-clamp="1">{{ task.title }}</span>
+              {% if task.description != "" and task.description != nil %}
+                <span class="description" data-clamp="1">{{ task.description | strip_html | truncate: 40 }}</span>
+              {% endif %}
+              {% if task.assignees.size > 0 %}
+                <span class="description">{{ task.assignees[0].name }}</span>
+              {% endif %}
+              {% if task.due_date != "0001-01-01T00:00:00Z" %}
+                <span class="label label--small label--gray">{{ task.due_date | date: "%b %d" }}</span>
+              {% endif %}
+              {% if task.percent_done > 0 %}
+                <span class="label label--small">{{ task.percent_done | times: 100 | round: 0 }}%</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="item">
+        <div class="meta"></div>
+        <div class="content">
+          <span class="title">No tasks found</span>
+          <span class="description">Check your filter settings</span>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
 
 {{ title_bar }}

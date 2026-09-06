@@ -28,6 +28,17 @@ The `View Mode` setting appears immediately below `Projects` in the plugin setti
 
 Task View is the default. Kanban View requires exactly one project number.
 
+**Note:** Selecting `view_mode: "kanban"` does **not** create a separate URL such as `/kanban`. The Kanban layout is rendered on the same four routes used for Task View:
+
+```
+/full
+/half_horizontal
+/half_vertical
+/quadrant
+```
+
+When `view_mode` is set to `kanban`, each of these routes will display the Kanban board appropriate for the chosen frame size.
+
 ## Frame specifications
 
 ### Full
