@@ -145,7 +145,6 @@ custom_fields:
   min: 1
   max: 10
   default: 6
-# Added view mode selection to support Kanban view
 - keyname: view_mode
   field_type: select
   name: View Mode
