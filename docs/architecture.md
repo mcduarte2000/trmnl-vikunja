@@ -53,12 +53,16 @@ All rendered markup must follow Framework 3.3 UI System conventions.
 Vikunja API
     |
     v
+TRMNL polling (polling_url) fetches the flat task list
+    |
+    v
 src/transform.js
-  - build endpoint and request headers
-  - fetch and validate response
-  - normalize the task collection
+  - promote configured custom-field values to top-level Liquid variables
+  - (Kanban) fetch project views + buckets with request headers built from resolved config
+  - validate responses and normalize task data
   - apply filters
   - sort and limit
+  - shape output into `data.buckets` (Kanban) or `data` task array (Task View)
     |
     v
 TRMNL data context
@@ -98,11 +102,12 @@ The transformation layer owns network access and deterministic task preparation.
 
 #### Request contract
 
-- Build the default task endpoint as `<base_url>/api/v1/tasks`.
-- Send `Authorization: Bearer <api_token>`.
-- Add Cloudflare Access headers only when configured.
-- Treat non-2xx responses as errors.
-- Treat a non-array JSON payload as an empty task collection unless the TRMNL runtime requires a hard failure.
+The flat task list is fetched upstream by the TRMNL runtime using `polling_url` and `polling_headers`. `src/transform.js` does not re-poll that endpoint.
+
+- For Kanban View, the transform fetches additional Vikunja endpoints (the project's views, then the kanban view's bucket tasks). These requests are sent to `<base_url>/api/v1/...`.
+- Build request headers directly from the resolved configured values: `Authorization: Bearer <api_token>` and Cloudflare Access headers when the credentials are configured. Never parse the raw `polling_headers` string, because it still contains Liquid placeholders like `{{ api_token }}`.
+- Treat non-2xx responses as errors and surface a clear message (a 401 produces an authentication-specific error).
+- If the API cannot supply view or bucket metadata, return an explicit unavailable-board state rather than falling back to Task View.
 
 #### Filter pipeline
 
@@ -123,19 +128,33 @@ This order keeps inexpensive boolean and numeric checks ahead of string-heavy op
 
 #### Output contract
 
-Return an object with:
+The transform returns `{ ...input, ...promoted, data, view_mode, kanban_error, meta }`, where `promoted` copies the configured custom-field values (`view_mode`, `status_filter`, `project_ids`, `tasks_per_view`, etc.) to the top level so the Liquid templates can read them directly.
+
+Task View returns the filtered, sorted, limited task array under `data`:
 
 ```js
 {
-  tasks: [],
-  meta: {
-    total_shown: 0,
-    filters_applied: {}
-  }
+  data: [ /* task objects */ ],
+  view_mode: "task",
+  kanban_error: "",
+  meta: { total_shown: 0, filters_applied: {} }
 }
 ```
 
-Sort by `updated` descending and apply `tasks_per_view` after all filters. Preserve task fields needed by the templates, including `title`, `description`, `done`, `percent_done`, `due_date`, `assignees`, `priority`, and `project_id`.
+Kanban View returns the bucket columns under `data.buckets` as `[{ id, title, done, tasks: [ /* task objects */ ] }]`, preserving API-defined bucket order and flagging the done bucket:
+
+```js
+{
+  data: { buckets: [ { id, title, done, tasks: [] } ] },
+  view_mode: "kanban",
+  kanban_error: "",
+  meta: { total_shown: 0, filters_applied: {} }
+}
+```
+
+On failure, Kanban View returns an empty `data.buckets` with a human-readable `kanban_error`.
+
+Sort by `updated` descending and apply `tasks_per_view` after all filters. Preserve task fields needed by the templates, including `title`, `description`, `done`, `percent_done`, `due_date`, `assignees`, `priority`, and `project_id`. Credentials must never appear in the output.
 
 ### Shared presentation: `src/shared.liquid`
 
@@ -153,7 +172,7 @@ Each layout owns only its markup and density decisions. Layouts should consume t
 
 | Template | Target frame | Intent | Expected density |
 | --- | --- | --- | --- |
-| `full.liquid` | 800x480 | Rich task overview | Two-column grid, descriptions and metadata |
+| `full.liquid` | 800x480 / 480x800 | Rich task overview | Two-column grid; Kanban orientation-aware |
 | `half_horizontal.liquid` | 800x240 | Wide compact queue | Two-column-capable compact list |
 | `half_vertical.liquid` | 400x480 | Tall compact queue | One-column stacked list |
 | `quadrant.liquid` | 400x240 | Minimal glance view | Short titles and minimal due information |

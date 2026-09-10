@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document is the visual and interaction contract for the Vikunja TRMNL plugin. It complements `docs/user-stories.md` and `docs/architecture.md` by defining how the plugin should look and behave across TRMNL frames.
+This document is the visual and interaction contract for the Vikunja TRMNL plugin. It complements `docs/user-stories.md` and `docs/architecture.md` by defining how the plugin should look and behave across TRMNL frames. For the per-frame Kanban column direction and font rules, see `docs/view-behavior.md`.
 
 Update this document before making visual changes so each iteration remains consistent.
 
@@ -43,12 +43,14 @@ When `view_mode` is set to `kanban`, each of these routes will display the Kanba
 
 ### Full
 
-- Target: 800x480; scale up for TRMNL X where supported.
-- Task View: two-column task grid with title, optional description, assignee, due date, and progress.
-- Kanban View: horizontal status columns, top-aligned.
-- Kanban separators: vertical `divider--v` between adjacent columns.
+- Target: 800x480 landscape, 480x800 portrait; scale up for TRMNL X where supported.
+- Task View: two-column task grid with title, optional description, assignee, due date, and progress. Task View is unmasked by orientation.
+- Kanban View: orientation-aware — columns flow horizontally when the frame is landscape and stack vertically when it is portrait.
+- Orientation is detected at runtime from `trmnl.device.{width,height}` (portrait when `height > width`).
+- Landscape Kanban: horizontal status columns, top-aligned, vertical `divider--v` separators.
+- Portrait Kanban: status columns stacked vertically in API order, horizontal `divider--h` separators, matching Half Vertical.
 - Kanban header: bucket title and visible task count, for example `To-Do (2)`.
-- Use `title--small lg:title--base` for Kanban headers where appropriate.
+- Landscape Kanban headers: `title--small lg:title--base`. Portrait Kanban headers: `title--small`.
 - Use `data-clamp="1"` for task titles, but do not clamp the header count.
 
 ### Half Horizontal
@@ -75,11 +77,13 @@ When `view_mode` is set to `kanban`, each of these routes will display the Kanba
 
 - Target: 400x240.
 - Task View: minimal compact task list.
-- Kanban View: horizontal status columns, top-aligned.
-- Kanban separators: vertical `divider--v` between adjacent columns.
+- Kanban View: status columns stacked vertically in API order, matching Half Vertical.
+- Kanban separators: horizontal `divider--h` between adjacent status sections.
 - Keep only the title and essential status information.
 - Use the smallest practical title scale and avoid descriptions.
 - **Task titles are rendered in a block element without `data-clamp="1"` to enable natural word‑wrapping for long titles.**
+
+> **Orientation note:** Quadrant is a portrait frame. Kanban columns stack vertically, not horizontally. See `docs/view-behavior.md` for the frame-by-frame column direction and font rules.
 
 ## Kanban structure
 
@@ -117,15 +121,16 @@ Use Framework 3.3 utilities only:
 - Outer status arrangement: `gap` between horizontal columns or vertical status sections.
 - Header-to-task spacing: `mt--small` on the task group.
 - Task-to-task spacing: `gap--small` on the task group flex container.
-- Horizontal frame separators: `divider--v`.
-- Half Vertical separators: `divider--h`.
+- Horizontal frame separators (Landscape Full, Half Horizontal): `divider--v`.
+- Vertical-stacked frame separators (Portrait Full, Half Vertical, Quadrant): `divider--h`.
 
 Spacing must be visible but compact enough for e-paper. If a frame overflows, reduce secondary metadata before reducing the separation between the header and task rows.
 
 ## Typography
 
 - Framework titles are used for status headers and task titles.
-- Full Kanban headers use `title--small lg:title--base`.
+- Full (landscape) Kanban headers use `title--small lg:title--base`.
+- Full (portrait) and Half Vertical/Quadrant Kanban headers use `title--small`.
 - Compact Kanban headers and task titles use `title--small`.
 - Task titles use `data-clamp="1"` where the frame requires bounded height.
 - Kanban headers must not be clamped together with their counts. The count must remain visible.
@@ -194,11 +199,12 @@ If Kanban View has zero or multiple project numbers selected:
 Use these established classes and patterns:
 
 - Layout alignment: `layout layout--col layout--top` for top-anchored content.
-- Horizontal Kanban flow: `flex flex--row flex--top gap`.
-- Vertical Kanban flow: `flex flex--col gap`.
-- Flexible horizontal status widths: `grow` on status sections.
-- Vertical separators: `divider--v`.
-- Horizontal separators: `divider--h`.
+- Horizontal Kanban flow: `flex flex--row flex--top gap` (Landscape Full, Half Horizontal).
+- Vertical Kanban flow: `flex flex--col flex--left gap` (Portrait Full, Half Vertical, Quadrant).
+- Flexible horizontal status widths: `grow` on status sections (landscape frames only).
+- Vertical separators: `divider--v` (landscape frames).
+- Horizontal separators: `divider--h` (vertical-stacked frames).
+- Orientation detection: compare `trmnl.device.height` and `trmnl.device.width` in Liquid.
 - Repeated task spacing: `gap--small`.
 - Header-to-task spacing: `mt--small`.
 - Text clamping: `data-clamp="1"` on task titles only.
@@ -212,8 +218,9 @@ Before accepting a UI change, verify all four templates:
 - [ ] Kanban headers include complete task counts.
 - [ ] Header-to-task spacing is visible.
 - [ ] Task-to-task spacing is visible.
-- [ ] Full, Half Horizontal, and Quadrant columns are horizontal and top-aligned.
-- [ ] Half Vertical statuses are stacked in API order.
+- [ ] Full (landscape) and Half Horizontal columns are horizontal and top-aligned.
+- [ ] Full (portrait), Half Vertical, and Quadrant statuses are stacked in API order.
+- [ ] The Full frame renders horizontal in landscape and vertical in portrait (verified in both orientations).
 - [ ] Separators use the correct direction.
 - [ ] Empty columns remain visible with `(0)`.
 - [ ] Long titles do not break column geometry.

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Resolve the project root (directory containing this script's parent)
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Run the official TRMNL preview image, mounting the project directory.
+# Ensure the Docker binary is in PATH for the script (some minimal bash envs
+# omit /usr/local/bin). Then invoke Docker.
+export PATH="/usr/local/bin:$PATH"
+docker run --rm \
+  -v "${PROJECT_ROOT}:/app" \
+  -w /app \
+  -p 3000:3000 \
+  trmnl/trmnlp "$@"

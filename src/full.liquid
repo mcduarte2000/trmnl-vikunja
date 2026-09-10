@@ -1,12 +1,32 @@
 {%- comment -%}
-  FULL VIEW (800x480)
+  FULL VIEW (800x480 landscape, 480x800 portrait)
   ════════════════════════════════════════════════════════════════
   Shows 6-8 tasks in a 2-column grid layout when Task View is selected.
   When `view_mode` is set to "kanban", this template renders the Kanban board
-  using the shared layout utilities.
+  using the shared layout utilities. Kanban columns run horizontally in a
+  landscape frame and stack vertically in a portrait frame, detected at runtime
+  via trmnl.device.{width,height} (portrait when height > width).
 {%- endcomment -%}
 
 {%- assign view_name = "full" -%}
+{%- assign device_height = trmnl.device.height | default: 480 | plus: 0 -%}
+{%- assign device_width = trmnl.device.width | default: 800 | plus: 0 -%}
+{%- if device_height > device_width -%}
+  {%- assign is_portrait = true -%}
+{%- else -%}
+  {%- assign is_portrait = false -%}
+{%- endif -%}
+{%- if is_portrait -%}
+  {%- assign kanban_container_class = "flex flex--col flex--left gap" -%}
+  {%- assign kanban_column_class = "flex flex--col flex--left px--small" -%}
+  {%- assign kanban_header_class = "title title--small text--left" -%}
+  {%- assign kanban_divider_class = "divider--h" -%}
+{%- else -%}
+  {%- assign kanban_container_class = "flex flex--row flex--top gap" -%}
+  {%- assign kanban_column_class = "grow flex flex--col flex--left px--small" -%}
+  {%- assign kanban_header_class = "title title--small lg:title--base text--left" -%}
+  {%- assign kanban_divider_class = "divider--v" -%}
+{%- endif -%}
 
 {% if view_mode == "kanban" %}
   {% if kanban_error != "" %}
@@ -20,12 +40,11 @@
       </div>
     </div>
   {% elsif data.buckets and data.buckets.size > 0 %}
-    {%- assign filtered_tasks = data.buckets | map: "tasks" | flatten -%}
     <div class="layout layout--col layout--top gap">
-      <div class="flex flex--row flex--top gap">
+      <div class="{{ kanban_container_class }}">
         {% for column in data.buckets %}
-          <div class="grow flex flex--col flex--left px--small">
-            <span class="title title--small lg:title--base text--left">{{ column.title | upcase }} ({{ column.tasks.size }})</span>
+          <div class="{{ kanban_column_class }}">
+            <span class="{{ kanban_header_class }}">{{ column.title | upcase }} ({{ column.tasks.size }})</span>
             <div class="flex flex--col gap--small mt--small">
               {% for task in column.tasks %}
                 <div class="item">
@@ -44,7 +63,7 @@
               {% endfor %}
             </div>
           </div>
-          {% unless forloop.last %}<div class="divider--v"></div>{% endunless %}
+          {% unless forloop.last %}<div class="{{ kanban_divider_class }}"></div>{% endunless %}
         {% endfor %}
       </div>
     </div>

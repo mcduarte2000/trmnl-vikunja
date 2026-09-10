@@ -11,6 +11,7 @@ Before changing behavior, consult:
 - `docs/user-stories.md`: functional requirements and Gherkin acceptance criteria.
 - `docs/architecture.md`: data flow, API boundaries, runtime requirements, and technology decisions.
 - `docs/ui-specifications.md`: frame-specific visual rules and UI acceptance checklist.
+- `docs/view-behavior.md`: per-frame Kanban column direction and typography.
 - `src/settings.yml`: public TRMNL plugin settings.
 - `src/transform.js`: API retrieval, filtering, sorting, and view-mode data preparation.
 
@@ -208,8 +209,9 @@ trmnlp serve
 - `Kanban View` requires exactly one project number.
 - Kanban data must preserve the API-defined bucket order.
 - Kanban columns must preserve empty buckets and show visible task counts.
-- Full, Half Horizontal, and Quadrant use horizontal, top-aligned columns with vertical dividers.
-- Half Vertical stacks statuses vertically in API order with horizontal dividers.
+- Full (landscape), and Half Horizontal use horizontal, top-aligned columns with vertical dividers.
+- Full (portrait), Half Vertical, and Quadrant stack statuses vertically in API order with horizontal dividers.
+- The Full frame detects its orientation at runtime from `trmnl.device.{width,height}` (portrait when `height > width`).
 - Keep spacing between column headers and tasks, and between task rows.
 
 ## Editing rules

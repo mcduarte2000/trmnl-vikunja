@@ -88,8 +88,8 @@ custom_fields:
   default: '0'
 - keyname: multi_string_0385
   field_type: multi_string
-  name: Multi String
-  description: Project Number
+  name: Project Number
+  description: One or more project numbers, separated by commas
   help_text: Hover your mouse over the link to the project in Vikunja to get the project number. Leave empty to show tasks from all projects.
   placeholder: '1'
   default: ''

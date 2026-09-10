@@ -26,9 +26,9 @@
     </div>
   {% elsif data.buckets and data.buckets.size > 0 %}
     <div class="layout layout--col layout--top gap">
-      <div class="flex flex--row flex--top gap">
+      <div class="flex flex--col flex--left gap">
         {% for column in data.buckets %}
-          <div class="grow flex flex--col flex--left px--small">
+          <div class="flex flex--col flex--left px--small">
             <span class="title title--small text--left">{{ column.title | upcase }} ({{ column.tasks.size }})</span>
             <div class="flex flex--col gap--small mt--small">
               {% for task in column.tasks %}
@@ -48,7 +48,7 @@
               {% endfor %}
             </div>
           </div>
-          {% unless forloop.last %}<div class="divider--v"></div>{% endunless %}
+          {% unless forloop.last %}<div class="divider--h"></div>{% endunless %}
         {% endfor %}
       </div>
     </div>

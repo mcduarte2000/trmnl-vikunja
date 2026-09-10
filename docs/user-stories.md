@@ -239,14 +239,24 @@ Feature: Render a Vikunja Kanban board
     And a due date appears only when the task has a due date
 
   Scenario: Align wide Kanban columns at the top
-    Given the selected TRMNL frame is Full, Half Horizontal, or Quadrant
+    Given the selected TRMNL frame is Full in landscape or Half Horizontal
     When Kanban View is rendered
     Then columns are arranged side by side horizontally
     And all columns start at the same top position
     And a vertical separator appears between adjacent columns
 
-  Scenario: Stack Kanban columns in Half Vertical
-    Given the selected TRMNL frame is Half Vertical
+  Scenario: Adapt the Full frame to portrait orientation
+    Given the selected TRMNL frame is Full
+    And the frame is mounted in portrait orientation
+    When Kanban View is rendered
+    Then the plugin detects the orientation from the device dimensions
+    And columns are stacked vertically in API order
+    And the first status appears at the top
+    And each following status appears below the previous one
+    And a horizontal separator appears between adjacent columns
+
+  Scenario: Stack Kanban columns in Half Vertical and Quadrant
+    Given the selected TRMNL frame is Half Vertical or Quadrant
     When Kanban View is rendered
     Then columns are stacked vertically in API order
     And the first status appears at the top
