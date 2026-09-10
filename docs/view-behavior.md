@@ -72,6 +72,8 @@ Use Framework 3.3 title and label utilities — never custom font declarations.
 | Task title | `title--small` with `data-clamp="1"` | `title--small` with `data-clamp="1"` | `title--small` with `data-clamp="1"` | `title--small` with `data-clamp="1"` | `title--small` with `text--wrap` (no clamp) |
 | Task due label | `label--small label--gray` | `label--small label--gray` | `label--small label--gray` | `label--small label--gray` | `label--xsmall label--gray` |
 
+Every small gray element (the muted done-column title via `text--gray-50`, and the gray due label via `label--gray`/`label--xsmall`) also carries `1bit:text--black 1bit:text--regular`. This keeps small gray text readable on 1-bit device palettes without escalating those labels to `label--inverted`. The override is applied in every frame and in both Task View and Kanban View.
+
 Notes:
 
 - Full (landscape) and Half Horizontal use the larger `lg:title--base` for column headers so headers are readable across a wide board.

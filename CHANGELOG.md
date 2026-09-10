@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.1.1] - 2026-09-11
+
+### Change
+- Improved readability of small gray text on 1-bit devices. Every small gray element — the muted done-column title (`title--small text--gray-50`) and the gray due-date label (`label--small label--gray` / `label--xsmall label--gray`) — now carries `1bit:text--black 1bit:text--regular` in all four frames and in both Task View and Kanban View. The `1bit:bg--`… `1bit:text--black` override restores full-contrast text on 1-bit palettes, and `1bit:text--regular` keeps the weight-based visual distinction rather than escalating to `label--inverted`.
+
+### Documentation
+- Updated `src/shared.liquid` color policy, `docs/ui-specifications.md`, and `docs/view-behavior.md` to document the `1bit:` override rule.
+
 ## [v1.1.0] - 2026-09-10
 
 ### Feature

@@ -52,6 +52,10 @@ COLOR POLICY:
 - Default to grayscale for maximum device compatibility
 - hex_color field available but rarely set — don't rely on it
 - If using color: prefer semantic labels (label--success for done, etc.)
+- Small gray text/labels (`title--small`/`label--small`/`label--xsmall` with
+  `text--gray-50` or `label--gray`) can be hard to read on 1-bit palettes —
+  always add `1bit:text--black 1bit:text--regular` to those classes to keep
+  them readable without jumping all the way to `label--inverted`.
 {%- endcomment -%}
 
 {%- comment -%}

@@ -51,12 +51,12 @@
                   <div class="meta"></div>
                   <div class="content">
                     {% if column.done or task.done %}
-                      <span class="title title--small text--gray-50" style="text-decoration: line-through;" data-clamp="1">{{ task.title }}</span>
+                      <span class="title title--small text--gray-50 1bit:text--black 1bit:text--regular" style="text-decoration: line-through;" data-clamp="1">{{ task.title }}</span>
                     {% else %}
                       <span class="title title--small" data-clamp="1">{{ task.title }}</span>
                     {% endif %}
                     {% if column.done == false and task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
-                      <span class="label label--small label--gray">due {{ task.due_date | date: "%d %b" }}</span>
+                      <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">due {{ task.due_date | date: "%d %b" }}</span>
                     {% endif %}
                   </div>
                 </div>
@@ -99,7 +99,7 @@
                 <span class="description">{{ task.assignees[0].name }}</span>
               {% endif %}
               {% if task.due_date != "0001-01-01T00:00:00Z" %}
-                <span class="label label--small label--gray">{{ task.due_date | date: "%b %d" }}</span>
+                <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ task.due_date | date: "%b %d" }}</span>
               {% endif %}
               {% if task.percent_done > 0 %}
                 <span class="label label--small">{{ task.percent_done | times: 100 | round: 0 }}%</span>

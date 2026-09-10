@@ -208,6 +208,7 @@ Use these established classes and patterns:
 - Repeated task spacing: `gap--small`.
 - Header-to-task spacing: `mt--small`.
 - Text clamping: `data-clamp="1"` on task titles only.
+- Small gray text/labels on 1-bit devices: any `--small`/`--xsmall` text or label that uses a gray treatment (`text--gray-50`, `label--gray`) must also carry `1bit:text--black 1bit:text--regular` so it stays readable on 1-bit palettes.
 
 Do not add custom CSS for spacing, borders, alignment, or colors unless Framework 3.3 cannot express the requirement and the exception is documented here first.
 
@@ -224,6 +225,7 @@ Before accepting a UI change, verify all four templates:
 - [ ] Separators use the correct direction.
 - [ ] Empty columns remain visible with `(0)`.
 - [ ] Long titles do not break column geometry.
+- [ ] Small gray text/labels in all frames carry the `1bit:text--black 1bit:text--regular` overrides.
 - [ ] Task View still renders correctly.
 - [ ] The preview is checked in both HTML and PNG mode when available.
 - [ ] `trmnlp lint` passes.
