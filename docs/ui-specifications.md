@@ -26,7 +26,7 @@ The `View Mode` setting appears immediately below `Projects` in the plugin setti
 | Task View | `task` | Shows a bounded list of tasks using the frame-specific task layout |
 | Kanban View | `kanban` | Shows one selected project's Vikunja buckets as status columns |
 
-Task View is the default. Kanban View requires exactly one project number.
+Task View is the default. Kanban View requires a project number.
 
 **Note:** Selecting `view_mode: "kanban"` does **not** create a separate URL such as `/kanban`. The Kanban layout is rendered on the same four routes used for Task View:
 
@@ -182,10 +182,10 @@ If the selected project has no usable Kanban view or the API cannot provide its 
 
 ### Invalid Kanban selection
 
-If Kanban View has zero or multiple project numbers selected:
+If Kanban View has no project number selected:
 
 - Show a clear configuration message.
-- Explain that exactly one project number is required.
+- Explain that a project number is required.
 
 ## Shared elements
 

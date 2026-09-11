@@ -13,7 +13,7 @@
  *         polling_headers,
  *         custom_fields_values: {                   // user-configured values
  *           api_token, base_url, cf_access_client_id, cf_access_client_secret,
- *           status_filter, priority_filter, project_ids,
+ *           status_filter, priority_filter, project_id,
  *           assignee_names, search_query, show_favorites_only, min_progress,
  *           due_within_days, tasks_per_view, view_mode
  *         }
@@ -23,11 +23,11 @@
  *
  * Responsibilities:
  *   1. Promote custom-field values to top-level merge variables so the
- *      Liquid templates can read `view_mode`, `status_filter`, `project_ids`,
+ *      Liquid templates can read `view_mode`, `status_filter`, `project_id`,
  *      `tasks_per_view`, and `meta`.
  *   2. Apply the documented filter pipeline (status, favorites, priority,
  *      progress, due-within, project, assignee, search) in order.
- *   3. In Kanban View, resolve exactly one project, fetch its kanban buckets,
+ *   3. In Kanban View, resolve the single project, fetch its kanban buckets,
  *      filter each bucket's tasks, and shape the result into `data.buckets`
  *      as the templates expect: [{ id, title, tasks, done }].
  */
@@ -145,11 +145,11 @@ function filterByDueWithin(tasks, dueWithinDays) {
   });
 }
 
-/** Filter 6 — Project IDs (comma-separated, OR logic). */
-function filterByProject(tasks, projectIdsStr) {
-  const ids = parseCommaList(projectIdsStr);
-  if (ids.length === 0) return tasks;
-  return tasks.filter((task) => ids.includes(String(task.project_id)));
+/** Filter 6 — Single project ID (empty value means all projects). */
+function filterByProject(tasks, projectIdStr) {
+  const projectId = String(projectIdStr || "").trim();
+  if (projectId === "") return tasks;
+  return tasks.filter((task) => String(task.project_id) === projectId);
 }
 
 /** Filter 7 — Assignee names (comma-separated, OR, case-insensitive). */
@@ -194,7 +194,7 @@ function applyTaskFilters(tasks, config) {
   result = filterByPriority(result, config.priority_filter);
   result = filterByProgress(result, config.min_progress);
   result = filterByDueWithin(result, config.due_within_days);
-  result = filterByProject(result, config.project_ids);
+  result = filterByProject(result, config.project_id);
   result = filterByAssignee(result, config.assignee_names);
   result = filterBySearch(result, config.search_query);
   return result.sort((a, b) => new Date(b.updated) - new Date(a.updated));
@@ -211,11 +211,10 @@ function flattenBuckets(buckets) {
  * The buckets are shaped as [{ id, title, tasks: [...], project_view_id }].
  */
 async function getKanbanBuckets(config) {
-  const projectIds = parseCommaList(config.project_ids);
-  if (projectIds.length !== 1) {
-    throw new Error("Kanban View requires exactly one project number");
+  const projectId = String(config.project_id || "").trim();
+  if (projectId === "") {
+    throw new Error("Kanban View requires a project number");
   }
-  const projectId = projectIds[0];
   const baseUrl = cleanBaseUrl(config);
 
   const views = await fetchJson(`${baseUrl}/api/v1/projects/${projectId}/views`, config);
@@ -263,7 +262,7 @@ function buildMeta(tasks, config) {
     filters_applied: {
       status: config.status_filter,
       priority_min: config.priority_filter,
-      project_ids: config.project_ids || "all",
+      project_id: config.project_id || "all",
       assignee_names: config.assignee_names || "all",
       search: config.search_query || "none",
       favorites_only: config.show_favorites_only,
@@ -279,7 +278,7 @@ async function transform(input) {
   const config = getConfig(input);
 
   // Promote configured values to top-level merge variables so the Liquid
-  // templates (which reference `view_mode`, `status_filter`, `project_ids`,
+  // templates (which reference `view_mode`, `status_filter`, `project_id`,
   // `tasks_per_view`, `meta`) can read them.
   const promoted = {};
   for (const [key, value] of Object.entries(config)) {

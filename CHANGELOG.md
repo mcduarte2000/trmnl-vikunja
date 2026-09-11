@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.2.0] - 2026-09-11
+
+### Change
+- Simplified project selection to a single project ID. The `multi_string_0385` (multi-string) field is replaced with a single `project_id` `number` field in `src/settings.yml`, and `polling_url` now uses `{{ project_id }}`. This removes the comma-separated multi-project logic, eliminates Kanban ambiguity (a single field satisfies Kanban View's requirement), and simplifies production configuration.
+
+### Documentation
+- Updated `docs/architecture.md`, `docs/filters.md`, `docs/ui-specifications.md`, `docs/user-stories.md`, and `AGENTS.md` to describe the single `project_id` setting.
+
 ## [v1.1.1] - 2026-09-11
 
 ### Change

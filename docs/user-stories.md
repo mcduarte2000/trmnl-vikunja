@@ -134,14 +134,14 @@ Feature: Filter task ownership and content
     When I hover over a project name in the left menu
     Then I can find that project's number
 
-  Scenario: Filter by one or more project numbers
-    Given I enter one or more project numbers separated by commas
+  Scenario: Filter by one project number
+    Given I enter a project number
     When tasks are processed
-    Then a task is shown when its project number matches any entered number
+    Then a task is shown only when its project number matches the entered number
     And tasks from other projects are excluded
 
   Scenario: Show tasks from all projects
-    Given I leave the Projects filter empty
+    Given I leave the Project Number field empty
     When tasks are processed
     Then tasks from all projects remain eligible
 
@@ -159,7 +159,7 @@ Feature: Filter task ownership and content
     And HTML markup in the description is ignored
 
   Scenario: Leave optional content filters empty
-    Given I leave Projects, assignee, and search filters empty
+    Given I leave Project Number, assignee, and search filters empty
     When tasks are processed
     Then those filters do not exclude tasks
 ```
@@ -210,7 +210,7 @@ Feature: Render a Vikunja Kanban board
 
   Scenario: Load the selected project's Kanban structure
     Given Kanban View is selected
-    And exactly one project number is selected
+    And a project number is selected
     When the plugin polls Vikunja
     Then it retrieves the project's configured view and buckets when the API exposes them
     And it retrieves the tasks associated with those buckets
@@ -284,9 +284,9 @@ Feature: Render a Vikunja Kanban board
 
   Scenario: Handle an invalid Kanban project selection
     Given Kanban View is selected
-    And zero or multiple project numbers are selected
+    And no project number is selected
     When the plugin renders
-    Then it shows a clear configuration message requiring exactly one project
+    Then it shows a clear configuration message requiring a project number
 ```
 
 ## US-007: Filter favorites and due dates

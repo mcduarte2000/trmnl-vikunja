@@ -114,17 +114,17 @@ Each filter section lists the display label and the attributes defined in `src/s
 
 | Property | Value |
 | --- | --- |
-| Setting (keyname) | `multi_string_0385` |
+| Setting (keyname) | `project_id` |
 | Label | Project Number |
-| Description | One or more project numbers, separated by commas |
-| Help text | Hover your mouse over the link to the project in Vikunja to get the project number. Leave empty to show tasks from all projects. |
-| Type | Multi string (comma-separated values) |
+| Description | Vikunja project to show tasks from |
+| Help text | Hover over the project in Vikunja to find its project number (an integer). Enter that number to show tasks from that project only. Leave empty to show tasks from all projects. |
+| Type | Number |
 | Default | `''` (all projects) |
 | Placeholder | `1` |
 
-**Behavior** Shows a task when its `project_id` matches any entered project number (OR logic). An empty value shows tasks from all projects.
+**Behavior** Shows a task only when its `project_id` equals the configured project number. An empty value shows tasks from all projects.
 
-> **Note:** this setting also feeds the Kanban polling URL (`/api/v1/projects/{id}/tasks`). Kanban View requires **exactly one** project number.
+> **Note:** this setting also feeds the polling URL (`/api/v1/projects/{id}/tasks`). Kanban View requires a single project number.
 
 ### Assignees
 
@@ -172,7 +172,7 @@ Each filter section lists the display label and the attributes defined in `src/s
 This is not a task filter but chooses the rendering layout:
 
 - `task` uses the task-list layouts for the selected frame.
-- `kanban` requires exactly one project number and renders the selected project's buckets as status columns.
+- `kanban` requires a project number and renders the selected project's buckets as status columns.
 
 ### Tasks per view
 
@@ -198,7 +198,7 @@ status_filter: active
 priority_filter: "3"      # High
 min_progress: 50
 due_within_days: "14"
-multi_string_0385: "3, 7"
+project_id: "7"
 assignee_names: Miguel,Ana
 search_query: api,fix
 tasks_per_view: 6
@@ -210,7 +210,7 @@ A task is shown only if **all** of these hold:
 - `priority` is `3`, `4`, or `5`
 - progress is `50%` or more
 - `due_date` is valid and within the next 14 days
-- `project_id` is `3` or `7`
+- `project_id` is `7`
 - an assignee is `Miguel` or `Ana` (case-insensitive)
 - `api` or `fix` appears in the title or description
 

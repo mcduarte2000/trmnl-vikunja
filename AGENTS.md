@@ -206,7 +206,7 @@ trmnlp serve
 ## View modes
 
 - `Task View` is the default and uses the existing task-list layouts.
-- `Kanban View` requires exactly one project number.
+- `Kanban View` requires a project number.
 - Kanban data must preserve the API-defined bucket order.
 - Kanban columns must preserve empty buckets and show visible task counts.
 - Full (landscape), and Half Horizontal use horizontal, top-aligned columns with vertical dividers.

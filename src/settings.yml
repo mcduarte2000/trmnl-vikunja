@@ -6,7 +6,7 @@ static_data: ''
 polling_verb: get
 framework_version: 3.3.0
 serverless_language: node
-polling_url: "{{ base_url }}/api/v1/projects/{{ project_ids }}/tasks"
+polling_url: "{{ base_url }}/api/v1/projects/{{ project_id }}/tasks"
 polling_headers: CF-Access-Client-Id={{ cf_access_client_id }}&CF-Access-Client-Secret={{ cf_access_client_secret }}&Authorization=Bearer {{ api_token }}
 polling_body: ''
 id: 461534
@@ -86,14 +86,17 @@ custom_fields:
   - Highest: 4
   - Urgent: 5
   default: '0'
-- keyname: multi_string_0385
-  field_type: multi_string
+- keyname: project_id
+  field_type: number
   name: Project Number
-  description: One or more project numbers, separated by commas
-  help_text: Hover your mouse over the link to the project in Vikunja to get the project number. Leave empty to show tasks from all projects.
+  description: Vikunja project to show tasks from
+  help_text: 'Hover over the project in Vikunja to find its project number (an integer). Enter that number to show tasks from that project only. Leave empty to show tasks from all projects.
+
+    '
   placeholder: '1'
-  default: ''
+  min: 1
   optional: true
+  default: ''
 - keyname: assignee_names
   field_type: text
   name: Assignee Names

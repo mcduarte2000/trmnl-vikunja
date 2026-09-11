@@ -89,10 +89,10 @@ Required settings:
 Optional settings:
 
 - `cf_access_client_id` and `cf_access_client_secret`: Cloudflare Access credentials.
-- `project_ids`, `view_mode`, `status_filter`, `priority_filter`, `assignee_names`, and `search_query`.
+- `project_id`, `view_mode`, `status_filter`, `priority_filter`, `assignee_names`, and `search_query`.
 - `show_favorites_only`, `min_progress`, `due_within_days`, and `tasks_per_view`.
 
-The `project_ids` field accepts one or more comma-separated Vikunja project numbers. An empty value means all projects. Users find a project number by hovering over the project name in Vikunja's left menu. The task's `project_id` value is compared to the configured numbers.
+The `project_id` field accepts a single Vikunja project number (an integer). An empty value means all projects. Users find a project number by hovering over the project name in Vikunja's left menu. The task's `project_id` value is compared to the configured number.
 
 The configured `base_url` is the source for the API endpoint. Avoid duplicating or appending `/api/v1` in the user-entered value. Secrets must remain password fields and must never be rendered into Liquid output.
 
@@ -118,17 +118,17 @@ Apply filters in this order unless profiling or a requirement changes it:
 3. Minimum priority.
 4. Minimum progress.
 5. Due-date window.
-6. Project IDs.
+6. Project ID.
 7. Assignee names.
 8. Search keywords.
 
-When `view_mode` is `kanban`, the data preparation layer must also resolve exactly one selected project, retrieve its available view and bucket metadata, and associate tasks with buckets. The API-defined bucket order is the source of truth for column order. If the API cannot provide that metadata, return an explicit unavailable-board state.
+When `view_mode` is `kanban`, the data preparation layer must also resolve the selected project, retrieve its available view and bucket metadata, and associate tasks with buckets. The API-defined bucket order is the source of truth for column order. If the API cannot provide that metadata, return an explicit unavailable-board state.
 
 This order keeps inexpensive boolean and numeric checks ahead of string-heavy operations. Filters combine with AND logic; comma-separated values inside one filter use OR logic.
 
 #### Output contract
 
-The transform returns `{ ...input, ...promoted, data, view_mode, kanban_error, meta }`, where `promoted` copies the configured custom-field values (`view_mode`, `status_filter`, `project_ids`, `tasks_per_view`, etc.) to the top level so the Liquid templates can read them directly.
+The transform returns `{ ...input, ...promoted, data, view_mode, kanban_error, meta }`, where `promoted` copies the configured custom-field values (`view_mode`, `status_filter`, `project_id`, `tasks_per_view`, etc.) to the top level so the Liquid templates can read them directly.
 
 Task View returns the filtered, sorted, limited task array under `data`:
 
