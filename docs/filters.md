@@ -124,7 +124,7 @@ Each filter section lists the display label and the attributes defined in `src/s
 
 **Behavior** Shows a task only when its `project_id` equals the configured project number. An empty value shows tasks from all projects.
 
-> **Note:** this setting also feeds the polling URL (`/api/v1/projects/{id}/tasks`). Kanban View requires a single project number.
+> **Note:** this setting also feeds the polling URL (`/api/v1/projects/{id}/tasks`).
 
 ### Assignees
 

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [v1.2.0] - 2026-09-11
 
+### Documentation
+- Added `docs/testing.md` — regression test checklist covering validation commands, render routes, Task/Kanban View checks, per-filter behavior, 1-bit accessibility, the single-project-ID change, and document-sync checks.
+
 ### Change
 - Simplified project selection to a single project ID. The `multi_string_0385` (multi-string) field is replaced with a single `project_id` `number` field in `src/settings.yml`, and `polling_url` now uses `{{ project_id }}`. This removes the comma-separated multi-project logic, eliminates Kanban ambiguity (a single field satisfies Kanban View's requirement), and simplifies production configuration.
 

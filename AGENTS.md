@@ -12,6 +12,7 @@ Before changing behavior, consult:
 - `docs/architecture.md`: data flow, API boundaries, runtime requirements, and technology decisions.
 - `docs/ui-specifications.md`: frame-specific visual rules and UI acceptance checklist.
 - `docs/view-behavior.md`: per-frame Kanban column direction and typography.
+- `docs/testing.md`: regression-test checklist for validating behavior changes.
 - `src/settings.yml`: public TRMNL plugin settings.
 - `src/transform.js`: API retrieval, filtering, sorting, and view-mode data preparation.
 

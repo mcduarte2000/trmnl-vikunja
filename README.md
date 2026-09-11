@@ -48,5 +48,6 @@ Add the `trmnl` topic to this repository so other TRMNL plugin developers can fi
 	- [Architecture](docs/architecture.md)
 	- [UI Specifications](docs/ui-specifications.md)
 	- [User Stories](docs/user-stories.md)
+	- [Testing](docs/testing.md)
 - **Changelog**: view the project history and recent changes in the [CHANGELOG.md](CHANGELOG.md).
 - **Agent Configuration**: details about the Copilot agent setup are in [AGENTS.md](AGENTS.md).
