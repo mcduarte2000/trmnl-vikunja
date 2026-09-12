@@ -42,7 +42,7 @@ All rendered markup must follow Framework 3.3 UI System conventions.
 - Use Framework 3.3 layout, typography, item, label, spacing, and responsive utility classes.
 - Keep the shared title bar in `src/shared.liquid` so all layouts have consistent identity and context.
 - Use `lg:` responsive variants for larger TRMNL X frames where appropriate.
-- Use `item--meta-emphasis-*` classes to communicate priority in compact layouts.
+- Use `item--emphasis-1/2/3` classes to communicate priority in compact layouts (Urgent 4 → `item--emphasis-3`, High 3 → `item--emphasis-2`, Medium 2 → `item--emphasis-1`).
 - Prefer grayscale and semantic Framework classes for e-paper readability and device compatibility.
 - Do not add a parallel CSS system unless Framework 3.3 cannot express the required behavior.
 - Every layout must remain readable at 800x480, 800x240, 400x480, and 400x240 respectively.
@@ -193,12 +193,12 @@ Kanban layout rules are frame-specific:
 
 ### Priority
 
-Compact layouts map meaningful priorities to Framework 3.3 emphasis:
+Compact layouts map meaningful priorities to Framework 3.3 emphasis (`item--emphasis-1/2/3`):
 
-- Urgent/highest: strongest available emphasis.
-- High: medium emphasis.
-- Medium: light emphasis.
-- Low and none: default emphasis.
+- Urgent (4): `item--emphasis-3`, strongest available emphasis.
+- High (3): `item--emphasis-2`, medium emphasis.
+- Medium (2): `item--emphasis-1`, light emphasis.
+- Low (1) and none: default emphasis (no class).
 
 The mapping must be consistent across all compact layouts.
 

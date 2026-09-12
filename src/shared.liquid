@@ -27,7 +27,7 @@ DATA PRIORITIES:
 TASK CARDS IN SMALLER SCREENS/FRAMES
 On a compact screen, space is at a premium. The goal is a highly focused "Up Next", use the following fields:
 - Each task is one Item from the Item Component
-- Priority Badge: Is representaded by the Item Meta Emphasis. If the priority is Urgent (4), use emphasis 3., High (3), use emphasis 2, Medium (2) use emphasis 1, else default.
+- Priority Badge: Represented by the Item Emphasis level (`item--emphasis-1/2/3`). If the priority is Urgent (4), use `item--emphasis-3`; High (3), use `item--emphasis-2`; Medium (2), use `item--emphasis-1`; else default (no class).
 - Task Name: Item Title (title--small), truncate if it exceeds the line. If for the task the status "Done" is true, cross the title out.
 - Due Date (if actionable): Use flex gap--small. Format it relatively (e.g., "Today", "Tomorrow") when near, else day/month (dd/mm). If is overdue, write "overdue by x days".
 - Keep meta class empty (no index).
@@ -72,16 +72,16 @@ COLOR POLICY:
   ════════════════════════════════════════════════════════════════
   DATA PREPARATION — FILTER PIPELINE
   ════════════════════════════════════════════════════════════════
-  
+
   Filter order: cheapest comparisons first → most expensive last.
-  
+
   Filters applied:
     1. Status         (done boolean)
     2. Favorites      (is_favorite boolean)
     3. Priority       (numeric threshold)
     4. Min progress   (percent_done × 100)
-    5. Due within     (date range, excludes sentinel)
-    6. Project IDs    (comma-separated membership)
+    5. Due within     (date range, excludes sentinel and overdue)
+    6. Project        (single project ID, empty = all projects)
     7. Assignee names (nested array, comma-separated)
     8. Search         (comma-separated OR on title+description)
   ════════════════════════════════════════════════════════════════

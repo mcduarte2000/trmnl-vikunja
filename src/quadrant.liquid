@@ -32,7 +32,17 @@
             <span class="title title--small text--left">{{ column.title | upcase }} ({{ column.tasks.size }})</span>
             <div class="flex flex--col gap--small mt--small">
               {% for task in column.tasks %}
-                <div class="item item--emphasis-3">
+                {%- comment -%} PRIORITY: emphasis 4=urgent, 3=high, 2=medium {%- endcomment -%}
+                {%- if task.priority == 4 -%}
+                  {%- assign emphasis_class = "item--emphasis-3" -%}
+                {%- elsif task.priority == 3 -%}
+                  {%- assign emphasis_class = "item--emphasis-2" -%}
+                {%- elsif task.priority == 2 -%}
+                  {%- assign emphasis_class = "item--emphasis-1" -%}
+                {%- else -%}
+                  {%- assign emphasis_class = "" -%}
+                {%- endif -%}
+                <div class="item {{ emphasis_class }}">
                   <div class="meta"></div>
                   <div class="content">
                     {% if column.done or task.done %}
@@ -69,13 +79,13 @@
       <div class="columns" data-overflow-max-cols="1">
         <div class="column">
           {% for task in filtered_tasks %}
-            {%- comment -%} PRIORITY: emphasis 3=urgent, 2=high, 1=medium {%- endcomment -%}
+            {%- comment -%} PRIORITY: emphasis 4=urgent, 3=high, 2=medium {%- endcomment -%}
             {%- if task.priority == 4 -%}
-              {%- assign emphasis_class = "item--meta-emphasis-3" -%}
+              {%- assign emphasis_class = "item--emphasis-3" -%}
             {%- elsif task.priority == 3 -%}
-              {%- assign emphasis_class = "item--meta-emphasis-2" -%}
+              {%- assign emphasis_class = "item--emphasis-2" -%}
             {%- elsif task.priority == 2 -%}
-              {%- assign emphasis_class = "item--meta-emphasis-1" -%}
+              {%- assign emphasis_class = "item--emphasis-1" -%}
             {%- else -%}
               {%- assign emphasis_class = "" -%}
             {%- endif -%}

@@ -406,7 +406,7 @@ Feature: Compact layouts
     Given a task is completed or has a meaningful priority
     When a compact layout is rendered
     Then completed titles are visually de-emphasized and struck through
-    And priority uses the Framework 3.3 item meta emphasis classes
+    And priority uses the Framework 3.3 item emphasis classes (`item--emphasis-1/2/3`)
 
   Scenario: Render no results in a compact view
     Given no tasks pass the filters

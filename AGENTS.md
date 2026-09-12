@@ -25,12 +25,23 @@ Before changing behavior, consult:
 - Keep presentation and layout decisions in the Liquid templates.
 - Preserve the shared title bar in `src/shared.liquid`.
 - Do not add custom CSS when Framework 3.3 utilities can express the requirement.
-- Do not change settings.xml. Only the user is allowed to change this file directly in TRMNL.
+- Do not change settings.xml without asking user explicit permission and proposing exact changes first.
 - Use the https://github.com/usetrmnl/trmnlp tool to help in development.
+
+## Reference Liquid Documentation
+
+Use these references to ground future Liquid work and resolve presentation questions without guessing:
+
+- [Official Liquid Docs](https://shopify.github.io/liquid/) — the authoritative reference for **core Liquid tags, filters, and objects** (`assign`, `if`, `for`, `include`, `capture`, `case`, etc.). Consult it first when writing or debugging standard Liquid logic; it defines how the template language behaves before any TRMNL filter is applied.
+- [Custom TRMNL plugin filters](https://help.trmnl.com/en/articles/10347358-custom-plugin-filters) — the **TRMNL-specific filters** mixed into the render context (e.g. date/time formatting, string helpers). Use these when a presentation problem is not solvable with core Liquid and a supported custom filter exists; this is the source for what filters exist and what they accept.
+- [Liquid for Designers — Standard Filters](https://github.com/shopify/liquid/wiki/liquid-for-designers#standard-filters) — a concise cheat sheet for **parsing and re-formatting liquid-injected data** (e.g. formatting dates, truncation, number formatting). Refer to it when you need to shape transformed data inside the template rather than in `src/transform.js`.
+- [TRMNL Framework 3.3](https://trmnl.com/framework/docs/3.3/v3_overview) — the **official TRMNL Framework 3.3 reference** for available classes, layout utilities, and conventions. Consult it to confirm a presentation requirement is expressible with a supported framework class before considering custom CSS (which this project avoids).
+
+Rule of thumb: prefer core Liquid first, then a supported TRMNL custom filter, and keep any `src/transform.js` data reformatting out of the templates.
 
 ## Plugin Structure
 
-This is the plugin structure, you are not allowed to create more files than these:
+This is the plugin structure, you are not allowed to create more files than these, unless requested by the user:
 ```
 .
 ├── .github
@@ -40,6 +51,13 @@ This is the plugin structure, you are not allowed to create more files than thes
 ├── .trmnlp.yml
 ├── bin
 │   └── trmnlp
+├── docs
+│   ├── architecture.md
+│   ├── filters.md
+│   ├── testing.md
+│   ├── ui-specifications.md
+│   ├── user-stories.md
+│   └── view-behavior.md
 └── src
     ├── full.liquid
     ├── half_horizontal.liquid
@@ -54,6 +72,7 @@ This is the plugin structure, you are not allowed to create more files than thes
 | `.github/workflows/trmnl.yml` | GitHub Actions workflow — lints every PR, deploys to TRMNL on `main` |
 | `.gitignore` | Keeps `trmnlp build` output out of version control |
 | `.trmnlp.yml` | Local dev-server config — not uploaded to TRMNL |
+| `docs/` | Requirements, architecture, and regression-test documentation (see **Shared references** above) |
 | `src/full.liquid` | Markup for the full screen |
 | `src/half_horizontal.liquid` | Top or bottom half of a stacked mashup |
 | `src/half_vertical.liquid` | Left or right half of a side-by-side mashup |

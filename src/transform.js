@@ -36,7 +36,7 @@
 
 /**
  * Parses a comma-separated string into a trimmed, non-empty array.
- * "3, 7" -> ["3","7"] ; "" -> []
+ * "Miguel, Ana" -> ["Miguel","Ana"] ; "" -> []
  */
 function parseCommaList(str) {
   if (!str || String(str).trim() === "") return [];
@@ -132,7 +132,7 @@ function filterByProgress(tasks, minProgress) {
   return tasks.filter((task) => (task.percent_done || 0) * 100 >= min);
 }
 
-/** Filter 5 — Due within N days (excludes the no-date sentinel). */
+/** Filter 5 — Due within N days (excludes the no-date sentinel and already-overdue tasks). */
 function filterByDueWithin(tasks, dueWithinDays) {
   const days = parseInt(dueWithinDays, 10) || 0;
   if (days === 0) return tasks; // "Anytime"

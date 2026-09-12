@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.2.1] - 2026-09-12
+
+### Fix
+- Fixed a rendering failure where `src/shared.liquid` contained stray control bytes that broke the Liquid comment blocks, producing an `Unknown tag 'endcomment'` error on all view routes. The file was restored to a clean state and the guidance comment edits were re-applied.
+
+### Change
+- In Task View, priority is now rendered with the framework's valid emphasis classes. Each task item uses `item--emphasis-1/2/3` (Urgent=4 → `item--emphasis-3`, High=3 → `item--emphasis-2`, Medium=2 → `item--emphasis-1`, otherwise no class) instead of the non-existent `item--meta-emphasis-*` class, which had no visual effect. This applies across the Full, Half Horizontal, Half Vertical, and Quadrant frames.
+
+### Change
+- Kanban column priority emphasis is now consistent across all four frames, replacing the previous mix of plain items (Full, Half Horizontal) and hardcoded `item--emphasis-3` (Half Vertical, Quadrant) with the same priority-to-emphasis mapping used in Task View.
+
+### Documentation
+- Updated `docs/architecture.md`, `docs/ui-specifications.md`, `docs/user-stories.md`, and the `src/shared.liquid` guidance comments to reference the valid `item--emphasis-1/2/3` classes instead of `item--meta-emphasis-*`.
+- Clarified the `src/shared.liquid` filter-pipeline guidance: the due-date filter excludes the sentinel and overdue tasks, and project filtering uses a single project ID (empty = all projects).
+
 ## [v1.2.0] - 2026-09-11
 
 ### Documentation
