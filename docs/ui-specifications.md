@@ -45,13 +45,11 @@ When `view_mode` is set to `kanban`, each of these routes will display the Kanba
 
 - Target: 800x480 landscape, 480x800 portrait; scale up for TRMNL X where supported.
 - Task View: two-column task grid with title, optional description, assignee, due date, and progress. Task View is unmasked by orientation.
-- Kanban View: orientation-aware — columns flow horizontally when the frame is landscape and stack vertically when it is portrait.
+- Kanban View: the Full frame always renders the standard horizontal Kanban, with columns flowing side by side regardless of orientation.
 - Orientation is detected at runtime from `trmnl.device.{width,height}` (portrait when `height > width`).
-- Landscape Kanban: horizontal status columns, top-aligned, vertical `divider--v` separators that span the full column height (`divider--v stretch-y`). Titles are centered with `text--center` (plus `w--full` so the centering spans the column) and a horizontal `divider--h` separates each title from its tasks.
-- Portrait Kanban: status columns stacked vertically in API order, horizontal `divider--h` separators, matching Half Vertical.
-- Kanban header: bucket title and visible task count, for example `To-Do (2)`.
-- Landscape Kanban headers: `title--small lg:title--base`. Portrait Kanban headers: `title--small`.
-- Use `data-clamp="1"` for task titles, but do not clamp the header count.
+- Kanban: horizontal status columns, top-aligned, vertical `divider--v` separators that span the full column height (`divider--v stretch-y`). Titles are centered with `text--center` (plus `w--full` so the centering spans the column) and a horizontal `divider--h` separates each title from its tasks. This matches Half Horizontal.
+- Kanban headers: `title--small lg:title--base` in both orientations.
+- Full (landscape), Full (portrait), and Half Horizontal Kanban task titles use `text--wrap` (no clamp) so long titles wrap within their columns instead of truncating. Do not clamp the header count.
 
 ### Half Horizontal
 
@@ -70,9 +68,9 @@ When `view_mode` is set to `kanban`, each of these routes will display the Kanba
 - Kanban View: status columns stacked vertically in API order.
 - The first status is at the top; each following status is below it.
 - Kanban separators: horizontal `divider--h` between adjacent status sections.
-- Use full available width for each status section.
+- Use full available width for each status section (`w--full` on the container and each column) so stacked buckets span the frame instead of sizing to their content.
 - Columns are left‑aligned within the frame (flex `flex--left`).
-- Keep task titles clamped to one line where possible.
+- Task titles use `text--wrap` (no clamp) so long titles wrap within the full-width stacked columns instead of truncating.
 
 ### Quadrant
 
@@ -123,17 +121,17 @@ Use Framework 3.3 utilities only:
 - Header-to-task spacing: `mt--small` on the task group.
 - Task-to-task spacing: `gap--small` on the task group flex container.
 - Horizontal frame separators (Landscape Full, Half Horizontal): `divider--v stretch-y`, filling the full column height.
-- Vertical-stacked frame separators (Portrait Full, Half Vertical, Quadrant): `divider--h`.
+- Vertical-stacked frame separators (Half Vertical, Quadrant): `divider--h`.
 
 Spacing must be visible but compact enough for e-paper. If a frame overflows, reduce secondary metadata before reducing the separation between the header and task rows.
 
 ## Typography
 
 - Framework titles are used for status headers and task titles.
-- Full (landscape) Kanban headers use `title--small lg:title--base`.
-- Full (portrait) and Half Vertical/Quadrant Kanban headers use `title--small`.
+- Full Kanban headers use `title--small lg:title--base` (landscape and portrait).
+- Half Vertical/Quadrant Kanban headers use `title--small`.
 - Compact Kanban headers and task titles use `title--small`.
-- Task titles use `data-clamp="1"` where the frame requires bounded height.
+- Task titles use `text--wrap` (no clamp) so long titles wrap within their columns instead of truncating. No Kanban frame clamps task titles.
 - Kanban headers must not be clamped together with their counts. The count must remain visible.
 - Avoid adding decorative typography or custom font declarations.
 
@@ -202,15 +200,17 @@ If Kanban View has no project number selected:
 Use these established classes and patterns:
 
 - Layout alignment: `layout layout--col layout--top` for top-anchored content.
-- Horizontal Kanban flow: `flex flex--row flex--top gap` (Landscape Full, Half Horizontal).
-- Vertical Kanban flow: `flex flex--col flex--left gap` (Portrait Full, Half Vertical, Quadrant).
-- Flexible horizontal status widths: `grow` on status sections (landscape frames only).
+- Horizontal Kanban flow: `flex flex--row flex--top w--full gap` (Full, Half Horizontal). `w--full` makes the row span the frame instead of sizing to its content, so the columns are not compressed to the width of the tasks.
+- Vertical Kanban flow: `flex flex--col flex--left w--full gap` (Half Vertical, Quadrant). `w--full` is applied to both the container and each stacked column so the buckets span the full frame width instead of sizing to their content.
+- Flexible horizontal status widths: `stretch-x` (`flex: 1 1 0%`) on Kanban columns (Full, Half Horizontal). Using `grow` alone would let a long `nowrap` task title expand its column's `flex-basis: auto` width, overflowing the divider; `stretch-x` with `min-width: 0` keeps columns equal-width regardless of content so each column shares the full-width row evenly.
+- Kanban task titles (Full in both orientations, Half Horizontal) do **not** clamp; they use `text--wrap` so multi-word titles wrap within each column instead of truncating.
+- Half Vertical Kanban task titles use `text--wrap` (no clamp) so long titles wrap within the full-width stacked columns instead of truncating.
 - Vertical separators: `divider--v stretch-y` (landscape frames), spanning the full column height.
 - Horizontal separators: `divider--h` (vertical-stacked frames).
 - Orientation detection: compare `trmnl.device.height` and `trmnl.device.width` in Liquid.
 - Repeated task spacing: `gap--small`.
 - Header-to-task spacing: `mt--small`.
-- Text clamping: `data-clamp="1"` on task titles only.
+- Text clamping: `data-clamp="1"` is used only in Task View title rows, never in Kanban View. All Kanban frames use `text--wrap`.
 - Small gray text/labels on 1-bit devices: any `--small`/`--xsmall` text or label that uses a gray treatment (`text--gray-50`, `label--gray`) must also carry `1bit:text--black 1bit:text--regular` so it stays readable on 1-bit palettes.
 
 Do not add custom CSS for spacing, borders, alignment, or colors unless Framework 3.3 cannot express the requirement and the exception is documented here first.
@@ -222,9 +222,9 @@ Before accepting a UI change, verify all four templates:
 - [ ] Kanban headers include complete task counts.
 - [ ] Header-to-task spacing is visible.
 - [ ] Task-to-task spacing is visible.
-- [ ] Full (landscape) and Half Horizontal columns are horizontal and top-aligned.
-- [ ] Full (portrait), Half Vertical, and Quadrant statuses are stacked in API order.
-- [ ] The Full frame renders horizontal in landscape and vertical in portrait (verified in both orientations).
+- [ ] Full (landscape and portrait) and Half Horizontal columns are horizontal and top-aligned.
+- [ ] Half Vertical and Quadrant statuses are stacked in API order.
+- [ ] The Full frame renders the standard horizontal Kanban in both orientations (verified in landscape and portrait).
 - [ ] Separators use the correct direction.
 - [ ] Empty columns remain visible with `(0)`.
 - [ ] Long titles do not break column geometry.

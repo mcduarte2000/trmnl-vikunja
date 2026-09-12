@@ -241,22 +241,25 @@ Feature: Render a Vikunja Kanban board
   Scenario: Align wide Kanban columns at the top
     Given the selected TRMNL frame is Full in landscape or Half Horizontal
     When Kanban View is rendered
-    Then columns are arranged side by side horizontally
+    Then columns are arranged side by side horizontally across the full frame width
     And all columns start at the same top position
     And a vertical separator appears between adjacent columns
+    And each column shares the available width equally
 
   Scenario: Adapt the Full frame to portrait orientation
     Given the selected TRMNL frame is Full
     And the frame is mounted in portrait orientation
     When Kanban View is rendered
     Then the plugin detects the orientation from the device dimensions
-    And columns are stacked vertically in API order
-    And the first status appears at the top
-    And each following status appears below the previous one
-    And a horizontal separator appears between adjacent columns
+    And columns are arranged side by side horizontally across the full frame width
+    And all columns start at the same top position
+    And a vertical separator appears between adjacent columns
+    And each column shares the available width equally
 
   Scenario: Stack Kanban columns in Half Vertical and Quadrant
     Given the selected TRMNL frame is Half Vertical or Quadrant
+    And Kanban statuses are stacked vertically
+    Then each status section spans the full width of the frame
     When Kanban View is rendered
     Then columns are stacked vertically in API order
     And the first status appears at the top
@@ -272,7 +275,7 @@ Feature: Render a Vikunja Kanban board
   Scenario: Keep Kanban content readable on e-paper
     Given a column contains more tasks than fit in the frame
     When the Kanban layout is rendered
-    Then task titles are clamped or truncated
+    Then task titles wrap within their columns whenever they are wider than the column
     And the layout does not overflow its target frame
     And the most important task information remains visible
 

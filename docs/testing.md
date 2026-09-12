@@ -78,8 +78,8 @@ Configure `view_mode: "kanban"` with a valid `project_id` and verify:
 - [ ] API-defined bucket order is preserved.
 - [ ] Each column header shows the visible task count in parentheses.
 - [ ] Empty buckets remain visible as empty columns.
-- [ ] Horizontal columns: Full (landscape) and Half Horizontal show side-by-side, top-aligned columns with vertical dividers (`divider--v stretch-y`) reaching the bottom edge.
-- [ ] Vertical columns: Full (portrait), Half Vertical, and Quadrant stack statuses vertically with horizontal dividers.
+- [ ] Horizontal columns: Full (landscape and portrait) and Half Horizontal show side-by-side, top-aligned columns with vertical dividers (`divider--v stretch-y`) reaching the bottom edge.
+- [ ] Vertical columns: Half Vertical and Quadrant stack statuses vertically with horizontal dividers.
 - [ ] Spacing exists between a column header and its first task, and between task rows.
 - [ ] Completed tasks remain distinguishable from active (semantic `label--success` handling).
 - [ ] With no `project_id`, the render shows a clear configuration message and does **not** silently fall back to Task View.

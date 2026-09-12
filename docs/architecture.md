@@ -183,7 +183,7 @@ Task View and Kanban View share the same TRMNL frame variants. Task View uses th
 
 Kanban layout rules are frame-specific:
 
-- Full, Half Horizontal, and Quadrant use the Framework 3.3 `columns` system in horizontal flow. Columns are top-aligned by the framework and adjacent columns use `divider--v stretch-y` so each vertical separator spans the full column height down to the bottom edge.
+- Full, Half Horizontal, and Quadrant use the Framework 3.3 `columns` system in horizontal flow. The Full frame uses this horizontal flow in **both** orientations (portrait included), matching Half Horizontal. Columns are top-aligned by the framework and adjacent columns use `divider--v stretch-y` so each vertical separator spans the full column height down to the bottom edge.
 - Half Vertical uses the Framework 3.3 `columns` system with `data-overflow-max-cols="1"`, preserving API order from top to bottom. Adjacent columns use `divider--h`.
 - The column structure must remain visible when a bucket has no tasks.
 - Each Kanban header renders the bucket title followed by the visible task count in parentheses, for example `Doing (3)`.

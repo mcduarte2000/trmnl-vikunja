@@ -12,8 +12,7 @@ TRMNL frames fall into two orientations. The **Full** frame is orientation-aware
 
 | Orientation | Frame | Target | Column flow |
 | --- | --- | --- | --- |
-| Landscape (adaptive) | Full | 800x480 | Horizontal (side by side) |
-| Portrait (adaptive) | Full | 480x800 | Vertical (stacked) |
+| Adaptive | Full | 800x480 / 480x800 | Horizontal (side by side) |
 | Landscape | Half Horizontal | 800x240 | Horizontal (side by side) |
 | Portrait | Half Vertical | 400x480 | Vertical (stacked) |
 | Portrait | Quadrant | 400x240 | Vertical (stacked) |
@@ -24,8 +23,8 @@ The plugin detects the **Full** frame's orientation at runtime from the device d
 
 Full (in landscape) and Half Horizontal arrange Kanban buckets side by side, top-aligned.
 
-- Wrap columns in `flex flex--row flex--top h--full gap` so the row fills the frame height.
-- Each column uses `grow` so widths are shared evenly.
+- Wrap columns in `flex flex--row flex--top h--full w--full gap` so the row fills the frame width and height. Without `w--full` the flex row sizes to its content and the columns shrink to fit only the tasks, leaving the board narrow and centered instead of spanning the frame.
+- Each column uses `stretch-x` (`flex: 1 1 0%`) so widths are shared evenly regardless of task-title length. `grow` alone computes the column width from content (`flex-basis: auto`), so a long single-line title widens its column as far as the frame allows and its clamped text reaches the divider; `stretch-x` forces `flex-basis: 0` and `min-width: 0`, which keeps all columns equal-width and keeps clamped titles contained within them.
 - Titles are centered with `text--center`; the header also uses `w--full` so it spans the full column width and the centered text is centered on the column.
 - A horizontal `divider--h` separates each column title from its tasks.
 - Use `divider--v stretch-y` between adjacent columns; the `stretch-y` modifier makes each vertical separator span the full column height down to the bottom edge.
@@ -34,10 +33,10 @@ Full (in landscape) and Half Horizontal arrange Kanban buckets side by side, top
 
 ### Portrait — vertical columns
 
-Full (in portrait), Half Vertical, and Quadrant stack Kanban buckets vertically in API-defined order.
+Half Vertical and Quadrant stack Kanban buckets vertically in API-defined order.
 
-- Wrap columns in `flex flex--col flex--left gap` (no outer `flex--row`).
-- Each column uses the full available width.
+- Wrap columns in `flex flex--col flex--left w--full gap` (no outer `flex--row`).
+- Each column uses the full available width (`w--full` on the container and each column) so stacked buckets span the frame instead of sizing to their content.
 - Use `divider--h` between adjacent status sections.
 - The first status appears at the top; each following status appears below it.
 - Columns are left-aligned within the frame.
@@ -70,17 +69,18 @@ Use Framework 3.3 title and label utilities — never custom font declarations.
 
 | Element | Landscape (Full) | Portrait (Full) | Half Horizontal | Half Vertical | Quadrant |
 | --- | --- | --- | --- | --- | --- |
-| Column header | `title--small lg:title--base` | `title--small` | `title--small lg:title--base` | `title--small` | `title--small` |
-| Task title | `title--small` with `data-clamp="1"` | `title--small` with `data-clamp="1"` | `title--small` with `data-clamp="1"` | `title--small` with `data-clamp="1"` | `title--small` with `text--wrap` (no clamp) |
+| Column header | `title--small lg:title--base` | `title--small lg:title--base` | `title--small lg:title--base` | `title--small` | `title--small` |
+| Task title | `title--small` with `text--wrap` (no clamp) | `title--small` with `text--wrap` (no clamp) | `title--small` with `text--wrap` (no clamp) | `title--small` with `text--wrap` (no clamp) | `title--small` with `text--wrap` (no clamp) |
 | Task due label | `label--small label--gray` | `label--small label--gray` | `label--small label--gray` | `label--small label--gray` | `label--xsmall label--gray` |
 
 Every small gray element (the muted done-column title via `text--gray-50`, and the gray due label via `label--gray`/`label--xsmall`) also carries `1bit:text--black 1bit:text--regular`. This keeps small gray text readable on 1-bit device palettes without escalating those labels to `label--inverted`. The override is applied in every frame and in both Task View and Kanban View.
 
 Notes:
 
-- Full (landscape) and Half Horizontal use the larger `lg:title--base` for column headers so headers are readable across a wide board.
-- Full (portrait), Half Vertical, and Quadrant use `title--small` headers because of the narrower, taller flow. The Full frame's header and task-title typography switch with its layout, exactly like the column flow, at runtime.
-- Half Vertical clamps task titles (`data-clamp="1"`) to keep the stacked layout stable.
+- Full (landscape) and Half Horizontal use the larger `lg:title--base` for column headers so headers are readable across a wide board. Their task titles use `text--wrap` (like Quadrant) so long titles wrap within the wider columns; combined with `w--full` on the row, columns span the frame instead of sizing to content.
+- Half Vertical and Quadrant use `title--small` headers because of the narrower, taller stacked flow. The Full frame's header and task-title typography match its standard horizontal Kanban layout in both orientations (detected at runtime).
+- Full Kanban task titles (landscape and portrait) use `text--wrap` (no clamp), so long titles wrap within the full-width columns instead of truncating.
+- Half Vertical Kanban task titles use `text--wrap` (no clamp) so long titles wrap within the full-width stacked columns instead of truncating.
 - Quadrant does **not** clamp task titles; it uses `text--wrap` so long titles wrap naturally within the minimal frame.
 - Kanban headers must never be clamped together with their counts. The count must always remain visible.
 - Header-to-task spacing uses `mt--small`; task-to-task spacing uses `gap--small`.
@@ -89,10 +89,9 @@ Notes:
 ## Orientation summary
 
 ```
-Landscape  │ Full (oriented) ......  flex--row h--full + divider--v stretch-y  ── horizontal
-           │ Half Horizontal ......  flex--row h--full + divider--v stretch-y  ── horizontal
-Portrait   │ Full (oriented) ......  flex--col  + divider--h  ── vertical (stacked)
-           │ Half Vertical ........  flex--col  + divider--h  ── vertical (stacked)
+Any        │ Full (oriented) ......  flex--row h--full + divider--v stretch-y  ── horizontal
+Landscape  │ Half Horizontal ......  flex--row h--full + divider--v stretch-y  ── horizontal
+Portrait   │ Half Vertical ........  flex--col  + divider--h  ── vertical (stacked)
            │ Quadrant .............  flex--col  + divider--h  ── vertical (stacked)
 ```
 

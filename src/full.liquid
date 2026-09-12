@@ -17,17 +17,22 @@
   {%- assign is_portrait = false -%}
 {%- endif -%}
 {%- if is_portrait -%}
-  {%- assign kanban_container_class = "flex flex--col flex--left gap" -%}
-  {%- assign kanban_column_class = "flex flex--col flex--left px--small" -%}
-  {%- assign kanban_header_class = "title title--small text--left" -%}
-  {%- assign kanban_divider_class = "divider--h" -%}
-  {%- assign kanban_header_divider_class = "" -%}
-{%- else -%}
-  {%- assign kanban_container_class = "flex flex--row flex--top h--full gap" -%}
-  {%- assign kanban_column_class = "grow flex flex--col flex--left px--small" -%}
+  {%- comment -%} Portrait Full uses a standard side-by-side Kanban (vertical columns, vertical dividers), matching Half Horizontal and Landscape Full. {%- endcomment -%}
+  {%- assign kanban_container_class = "flex flex--row flex--top h--full w--full gap" -%}
+  {%- assign kanban_column_class = "stretch-x flex flex--col flex--left px--small" -%}
   {%- assign kanban_header_class = "title title--small lg:title--base text--center w--full" -%}
   {%- assign kanban_divider_class = "divider--v stretch-y" -%}
   {%- assign kanban_header_divider_class = "divider--h" -%}
+  {%- assign kanban_title_class = "title title--small text--wrap" -%}
+  {%- assign kanban_title_clamp = "" -%}
+{%- else -%}
+  {%- assign kanban_container_class = "flex flex--row flex--top h--full w--full gap" -%}
+  {%- assign kanban_column_class = "stretch-x flex flex--col flex--left px--small" -%}
+  {%- assign kanban_header_class = "title title--small lg:title--base text--center w--full" -%}
+  {%- assign kanban_divider_class = "divider--v stretch-y" -%}
+  {%- assign kanban_header_divider_class = "divider--h" -%}
+  {%- assign kanban_title_class = "title title--small text--wrap" -%}
+  {%- assign kanban_title_clamp = "" -%}
 {%- endif -%}
 
 {% if view_mode == "kanban" %}
@@ -64,9 +69,9 @@
                   <div class="meta"></div>
                   <div class="content">
                     {% if column.done or task.done %}
-                      <span class="title title--small text--gray-50 1bit:text--black 1bit:text--regular" style="text-decoration: line-through;" data-clamp="1">{{ task.title }}</span>
+                      <span class="{{ kanban_title_class }} text--gray-50 1bit:text--black 1bit:text--regular" style="text-decoration: line-through;"{{ kanban_title_clamp }}>{{ task.title }}</span>
                     {% else %}
-                      <span class="title title--small" data-clamp="1">{{ task.title }}</span>
+                      <span class="{{ kanban_title_class }}"{{ kanban_title_clamp }}>{{ task.title }}</span>
                     {% endif %}
                     {% if column.done == false and task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
                       <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">due {{ task.due_date | date: "%d %b" }}</span>

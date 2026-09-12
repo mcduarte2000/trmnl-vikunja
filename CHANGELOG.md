@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.2.3] - 2026-09-12
+
+### Feature
+- Milestone: Kanban View now renders the correct visualization across **all** frame views and orientations — portrait and landscape — and has been validated in TRMNL OG, TRMNL X, and Kindle-class devices.
+- Portrait **Full** frame now uses the same standard side-by-side Kanban as Landscape Full and Half Horizontal: top-aligned, equal-width columns (`stretch-x`) separated by full-height `divider--v stretch-y` vertical separators, centered full-width headers, and a horizontal `divider--h` under each header. Previously the portrait branch stacked columns vertically with horizontal dividers.
+
+### Change
+- Unified Kanban column classes through Liquid variables in `src/full.liquid` so the portrait and landscape branches share one markup block. Both now use the row container `flex flex--row flex--top h--full w--full gap`, so the board spans the full frame in every orientation.
+- All Kanban frames (Full in both orientations, Half Horizontal, Half Vertical, Quadrant) now use `text--wrap` on task titles instead of `data-clamp="1"`, so long titles wrap naturally within their columns instead of truncating. Only Task View still uses `data-clamp`.
+- Half Vertical and Quadrant Kanban containers and stacked columns now use `w--full` so the buckets span the full frame width instead of sizing to their content (done in the prior working tree).
+- Half Horizontal now uses `w--full` on its row and `stretch-x` on its columns for shared equal widths, matching Landscape Full.
+
+### Fix
+- Corrected the local preview config values in `.trmnlp.yml` — the `select` custom fields (`view_mode`, `status_filter`, etc.) were storing the literal string `"[object Object]"`, which caused the View Mode dropdown to display "object Object" and the Kanban view to fall back to Task View. They now hold the real option values (`view_mode: kanban`, `status_filter: all`, …).
+- Clarified that `status_filter: ''` behaves like `active` (keeps only `done === false` tasks), which silently strips done tasks from the Kanban Done column; `status_filter: all` keeps every status.
+
+### Documentation
+- Updated `docs/ui-specifications.md`, `docs/view-behavior.md`, `docs/architecture.md`, `docs/testing.md`, and `docs/user-stories.md` to describe Portrait Full as a standard horizontal (side-by-side) Kanban in both orientations, matching Half Horizontal and Landscape Full. Half Vertical and Quadrant remain vertically stacked with horizontal dividers.
+
 ## [v1.2.2] - 2026-09-12
 
 ### Change
