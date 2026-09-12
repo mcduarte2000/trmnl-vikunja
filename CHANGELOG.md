@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - Portrait **Full** frame now uses the same standard side-by-side Kanban as Landscape Full and Half Horizontal: top-aligned, equal-width columns (`stretch-x`) separated by full-height `divider--v stretch-y` vertical separators, centered full-width headers, and a horizontal `divider--h` under each header. Previously the portrait branch stacked columns vertically with horizontal dividers.
 
 ### Change
+- Made the **Quadrant** Kanban task titles smaller for the minimal compact frame: task cards now use `text--small` (12px) instead of `title--small` (16px). Column headers remain at `title--small` (16px), and the Task View quad/layout is unchanged.
 - Unified Kanban column classes through Liquid variables in `src/full.liquid` so the portrait and landscape branches share one markup block. Both now use the row container `flex flex--row flex--top h--full w--full gap`, so the board spans the full frame in every orientation.
 - All Kanban frames (Full in both orientations, Half Horizontal, Half Vertical, Quadrant) now use `text--wrap` on task titles instead of `data-clamp="1"`, so long titles wrap naturally within their columns instead of truncating. Only Task View still uses `data-clamp`.
 - Half Vertical and Quadrant Kanban containers and stacked columns now use `w--full` so the buckets span the full frame width instead of sizing to their content (done in the prior working tree).

@@ -46,9 +46,9 @@
                   <div class="meta"></div>
                   <div class="content">
                     {% if column.done or task.done %}
-                      <div class="title title--small text--gray-50 1bit:text--black 1bit:text--regular text--wrap" style="text-decoration: line-through;">{{ task.title }}</div>
+                      <div class="title text--small text--gray-50 1bit:text--black 1bit:text--regular text--wrap" style="text-decoration: line-through;">{{ task.title }}</div>
                     {% else %}
-                      <div class="title title--small text--wrap">{{ task.title }}</div>
+                      <div class="title text--small text--wrap">{{ task.title }}</div>
                     {% endif %}
                     {% if column.done == false and task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
                       <span class="label label--xsmall label--gray 1bit:text--black 1bit:text--regular">due {{ task.due_date | date: "%d %b" }}</span>

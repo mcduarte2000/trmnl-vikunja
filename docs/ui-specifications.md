@@ -130,7 +130,7 @@ Spacing must be visible but compact enough for e-paper. If a frame overflows, re
 - Framework titles are used for status headers and task titles.
 - Full Kanban headers use `title--small lg:title--base` (landscape and portrait).
 - Half Vertical/Quadrant Kanban headers use `title--small`.
-- Compact Kanban headers and task titles use `title--small`.
+- Compact Kanban headers use `title--small`; quadrant Kanban task titles use `text--small` (12px) to keep the postcard frame compact.
 - Task titles use `text--wrap` (no clamp) so long titles wrap within their columns instead of truncating. No Kanban frame clamps task titles.
 - Kanban headers must not be clamped together with their counts. The count must remain visible.
 - Avoid adding decorative typography or custom font declarations.

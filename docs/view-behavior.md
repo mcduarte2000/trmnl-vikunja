@@ -70,7 +70,7 @@ Use Framework 3.3 title and label utilities — never custom font declarations.
 | Element | Landscape (Full) | Portrait (Full) | Half Horizontal | Half Vertical | Quadrant |
 | --- | --- | --- | --- | --- | --- |
 | Column header | `title--small lg:title--base` | `title--small lg:title--base` | `title--small lg:title--base` | `title--small` | `title--small` |
-| Task title | `title--small` with `text--wrap` (no clamp) | `title--small` with `text--wrap` (no clamp) | `title--small` with `text--wrap` (no clamp) | `title--small` with `text--wrap` (no clamp) | `title--small` with `text--wrap` (no clamp) |
+| Task title | `title--small` with `text--wrap` (no clamp) | `title--small` with `text--wrap` (no clamp) | `title--small` with `text--wrap` (no clamp) | `title--small` with `text--wrap` (no clamp) | `text--small` with `text--wrap` (no clamp) |
 | Task due label | `label--small label--gray` | `label--small label--gray` | `label--small label--gray` | `label--small label--gray` | `label--xsmall label--gray` |
 
 Every small gray element (the muted done-column title via `text--gray-50`, and the gray due label via `label--gray`/`label--xsmall`) also carries `1bit:text--black 1bit:text--regular`. This keeps small gray text readable on 1-bit device palettes without escalating those labels to `label--inverted`. The override is applied in every frame and in both Task View and Kanban View.
@@ -79,9 +79,10 @@ Notes:
 
 - Full (landscape) and Half Horizontal use the larger `lg:title--base` for column headers so headers are readable across a wide board. Their task titles use `text--wrap` (like Quadrant) so long titles wrap within the wider columns; combined with `w--full` on the row, columns span the frame instead of sizing to content.
 - Half Vertical and Quadrant use `title--small` headers because of the narrower, taller stacked flow. The Full frame's header and task-title typography match its standard horizontal Kanban layout in both orientations (detected at runtime).
+- Quadrant Kanban task titles use `text--small` (12px) to keep the minimal postcard frame compact, below its `title--small` (16px) column headers. This size applies only to the task cards; headers stay at `title--small`.
 - Full Kanban task titles (landscape and portrait) use `text--wrap` (no clamp), so long titles wrap within the full-width columns instead of truncating.
 - Half Vertical Kanban task titles use `text--wrap` (no clamp) so long titles wrap within the full-width stacked columns instead of truncating.
-- Quadrant does **not** clamp task titles; it uses `text--wrap` so long titles wrap naturally within the minimal frame.
+- Quadrant does **not** clamp task titles; it uses `text--wrap` so long titles wrap naturally within the minimal frame. Its task titles are `text--small` (12px); see the note above.
 - Kanban headers must never be clamped together with their counts. The count must always remain visible.
 - Header-to-task spacing uses `mt--small`; task-to-task spacing uses `gap--small`.
 - The done-column title line-through applies in all frames.
