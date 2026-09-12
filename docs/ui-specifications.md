@@ -47,7 +47,7 @@ When `view_mode` is set to `kanban`, each of these routes will display the Kanba
 - Task View: two-column task grid with title, optional description, assignee, due date, and progress. Task View is unmasked by orientation.
 - Kanban View: orientation-aware — columns flow horizontally when the frame is landscape and stack vertically when it is portrait.
 - Orientation is detected at runtime from `trmnl.device.{width,height}` (portrait when `height > width`).
-- Landscape Kanban: horizontal status columns, top-aligned, vertical `divider--v` separators.
+- Landscape Kanban: horizontal status columns, top-aligned, vertical `divider--v` separators that span the full column height (`divider--v stretch-y`). Titles are centered with `text--center` (plus `w--full` so the centering spans the column) and a horizontal `divider--h` separates each title from its tasks.
 - Portrait Kanban: status columns stacked vertically in API order, horizontal `divider--h` separators, matching Half Vertical.
 - Kanban header: bucket title and visible task count, for example `To-Do (2)`.
 - Landscape Kanban headers: `title--small lg:title--base`. Portrait Kanban headers: `title--small`.
@@ -58,7 +58,8 @@ When `view_mode` is set to `kanban`, each of these routes will display the Kanba
 - Target: 800x240.
 - Task View: compact two-column-capable task queue.
 - Kanban View: horizontal status columns, top-aligned.
-- Kanban separators: vertical `divider--v` between adjacent columns.
+- Kanban separators: vertical `divider--v stretch-y` between adjacent columns, reaching the bottom edge.
+- Column titles are centered (`text--center` + `w--full`); a horizontal `divider--h` separates each title from its tasks.
 - Keep task titles to one line and prioritize title visibility over secondary metadata.
 - Use the smaller title scale and compact gaps to protect the shallow frame.
 
@@ -121,7 +122,7 @@ Use Framework 3.3 utilities only:
 - Outer status arrangement: `gap` between horizontal columns or vertical status sections.
 - Header-to-task spacing: `mt--small` on the task group.
 - Task-to-task spacing: `gap--small` on the task group flex container.
-- Horizontal frame separators (Landscape Full, Half Horizontal): `divider--v`.
+- Horizontal frame separators (Landscape Full, Half Horizontal): `divider--v stretch-y`, filling the full column height.
 - Vertical-stacked frame separators (Portrait Full, Half Vertical, Quadrant): `divider--h`.
 
 Spacing must be visible but compact enough for e-paper. If a frame overflows, reduce secondary metadata before reducing the separation between the header and task rows.
@@ -204,7 +205,7 @@ Use these established classes and patterns:
 - Horizontal Kanban flow: `flex flex--row flex--top gap` (Landscape Full, Half Horizontal).
 - Vertical Kanban flow: `flex flex--col flex--left gap` (Portrait Full, Half Vertical, Quadrant).
 - Flexible horizontal status widths: `grow` on status sections (landscape frames only).
-- Vertical separators: `divider--v` (landscape frames).
+- Vertical separators: `divider--v stretch-y` (landscape frames), spanning the full column height.
 - Horizontal separators: `divider--h` (vertical-stacked frames).
 - Orientation detection: compare `trmnl.device.height` and `trmnl.device.width` in Liquid.
 - Repeated task spacing: `gap--small`.

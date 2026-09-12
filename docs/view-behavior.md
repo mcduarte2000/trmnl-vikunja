@@ -24,9 +24,11 @@ The plugin detects the **Full** frame's orientation at runtime from the device d
 
 Full (in landscape) and Half Horizontal arrange Kanban buckets side by side, top-aligned.
 
-- Wrap columns in `flex flex--row flex--top gap`.
+- Wrap columns in `flex flex--row flex--top h--full gap` so the row fills the frame height.
 - Each column uses `grow` so widths are shared evenly.
-- Use `divider--v` between adjacent columns.
+- Titles are centered with `text--center`; the header also uses `w--full` so it spans the full column width and the centered text is centered on the column.
+- A horizontal `divider--h` separates each column title from its tasks.
+- Use `divider--v stretch-y` between adjacent columns; the `stretch-y` modifier makes each vertical separator span the full column height down to the bottom edge.
 - Columns start at the same top position.
 - The done bucket keeps its API position among the columns.
 
@@ -87,8 +89,8 @@ Notes:
 ## Orientation summary
 
 ```
-Landscape  │ Full (oriented) ......  flex--row  + divider--v  ── horizontal
-           │ Half Horizontal ......  flex--row  + divider--v  ── horizontal
+Landscape  │ Full (oriented) ......  flex--row h--full + divider--v stretch-y  ── horizontal
+           │ Half Horizontal ......  flex--row h--full + divider--v stretch-y  ── horizontal
 Portrait   │ Full (oriented) ......  flex--col  + divider--h  ── vertical (stacked)
            │ Half Vertical ........  flex--col  + divider--h  ── vertical (stacked)
            │ Quadrant .............  flex--col  + divider--h  ── vertical (stacked)

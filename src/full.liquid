@@ -21,11 +21,13 @@
   {%- assign kanban_column_class = "flex flex--col flex--left px--small" -%}
   {%- assign kanban_header_class = "title title--small text--left" -%}
   {%- assign kanban_divider_class = "divider--h" -%}
+  {%- assign kanban_header_divider_class = "" -%}
 {%- else -%}
-  {%- assign kanban_container_class = "flex flex--row flex--top gap" -%}
+  {%- assign kanban_container_class = "flex flex--row flex--top h--full gap" -%}
   {%- assign kanban_column_class = "grow flex flex--col flex--left px--small" -%}
-  {%- assign kanban_header_class = "title title--small lg:title--base text--left" -%}
-  {%- assign kanban_divider_class = "divider--v" -%}
+  {%- assign kanban_header_class = "title title--small lg:title--base text--center w--full" -%}
+  {%- assign kanban_divider_class = "divider--v stretch-y" -%}
+  {%- assign kanban_header_divider_class = "divider--h" -%}
 {%- endif -%}
 
 {% if view_mode == "kanban" %}
@@ -45,6 +47,7 @@
         {% for column in data.buckets %}
           <div class="{{ kanban_column_class }}">
             <span class="{{ kanban_header_class }}">{{ column.title | upcase }} ({{ column.tasks.size }})</span>
+            {% if kanban_header_divider_class != "" %}<div class="{{ kanban_header_divider_class }}"></div>{% endif %}
             <div class="flex flex--col gap--small mt--small">
               {% for task in column.tasks %}
                 {%- comment -%} PRIORITY: emphasis 4=urgent, 3=high, 2=medium {%- endcomment -%}

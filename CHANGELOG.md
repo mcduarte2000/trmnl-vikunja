@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.2.2] - 2026-09-12
+
+### Change
+- In Kanban View, the horizontal frames (Full landscape and Half Horizontal) now draw each column's vertical separator with `divider--v stretch-y` so the separators span the full column height and reach the bottom edge of the screen.
+- The Kanban column header now has a visible separation from its tasks: a horizontal `divider--h` sits between the column title and the first task in the horizontal frames. Portrait frames are unchanged.
+- Column titles in the horizontal Kanban frames are now centered on their columns. The header span uses `text--center` together with `w--full` so the centering spans the full column width.
+
+### Documentation
+- Updated `docs/ui-specifications.md`, `docs/view-behavior.md`, `docs/architecture.md`, and `docs/testing.md` to describe the full-height vertical separators (`divider--v stretch-y`) for the horizontal Kanban frames and the horizontal `divider--h`/centered full-width header pattern.
+
 ## [v1.2.1] - 2026-09-12
 
 ### Fix
