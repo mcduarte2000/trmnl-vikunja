@@ -101,7 +101,7 @@ Set one filter at a time (all others empty) and verify each matches `docs/filter
 
 Framework 3.3 overrides for small gray text on 1-bit palettes. Verify across **all four frames** and in **both Task View and Kanban View**:
 
-- [ ] Every small gray element — the muted done-column title (`title--small`/`title--base` or, on the quadrant, `text--small` with `text--gray-50`) and the gray due-date label (`label--small`/`label--xsmall` with `label--gray`) — carries **both** `1bit:text--black 1bit:text--regular`.
+- [ ] Every small gray element — the muted done-column title (`title--small`/`title--base` or, on the quadrant, `text--small` with `text--gray-50`) and the gray due-date label (`label--small`/`label--gray text--small` with `label--gray`) — carries **both** `1bit:text--black 1bit:text--regular`.
 - [ ] The override count matches the source:
   - `src/full.liquid` → 3 occurrences
   - `src/half_horizontal.liquid` → 4

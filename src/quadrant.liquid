@@ -51,7 +51,7 @@
                       <div class="title text--small text--wrap">{{ task.title }}</div>
                     {% endif %}
                     {% if column.done == false and task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
-                      <span class="label label--xsmall label--gray 1bit:text--black 1bit:text--regular">due {{ task.due_date | date: "%d %b" }}</span>
+                      <span class="label label--gray text--small 1bit:text--black 1bit:text--regular">due {{ task.due_date | date: "%d %b" }}</span>
                     {% endif %}
                   </div>
                 </div>
@@ -116,7 +116,7 @@
                 {%- endif -%}
                 {%- if due_text -%}
                   <div class="flex gap--small">
-                    <span class="label label--xsmall label--gray 1bit:text--black 1bit:text--regular">{{ due_text }}</span>
+                    <span class="label label--gray text--small 1bit:text--black 1bit:text--regular">{{ due_text }}</span>
                   </div>
                 {%- endif -%}
               </div>

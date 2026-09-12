@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 
 ### Change
 - Made the **Quadrant** Kanban task titles smaller for the minimal compact frame: task cards now use `text--small` (12px) instead of `title--small` (16px). Column headers remain at `title--small` (16px), and the Task View quad/layout is unchanged.
+- Made the **Quadrant** Kanban and Task View due-date labels smaller too: they now use `label--gray text--small` instead of the invalid `label--xsmall` class (which fell back to the 16px base label size). They stay visually distinct from the normal task text via the gray color.
 - Unified Kanban column classes through Liquid variables in `src/full.liquid` so the portrait and landscape branches share one markup block. Both now use the row container `flex flex--row flex--top h--full w--full gap`, so the board spans the full frame in every orientation.
 - All Kanban frames (Full in both orientations, Half Horizontal, Half Vertical, Quadrant) now use `text--wrap` on task titles instead of `data-clamp="1"`, so long titles wrap naturally within their columns instead of truncating. Only Task View still uses `data-clamp`.
 - Half Vertical and Quadrant Kanban containers and stacked columns now use `w--full` so the buckets span the full frame width instead of sizing to their content (done in the prior working tree).
