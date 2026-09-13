@@ -103,7 +103,7 @@ custom_fields:
   description: Filter by assignee. Leave empty for all assignees.
   placeholder: Miguel
   default: ''
-  help_text: 'Enter one or more assignee names separated by commas (e.g. "Miguel,Ana"). Matches against task assignees. Leave empty to show all tasks regardless of assignee.
+  help_text: 'Enter one or more assignee names separated by commas (e.g. "Miguel,Ana"). A task matches only when an assignee''s name or username exactly equals one of the entered values — no partial matches. Leave empty to show all tasks regardless of assignee.
 
     '
   optional: true

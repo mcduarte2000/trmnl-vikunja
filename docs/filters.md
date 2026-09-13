@@ -138,7 +138,7 @@ Each filter section lists the display label and the attributes defined in `src/s
 | Default | `''` (all assignees) |
 | Placeholder | `Miguel` |
 
-**Behavior** Shows a task when any assignee name or username matches any entered value (OR logic). Matching is case-insensitive. An empty value shows all tasks regardless of assignee.
+**Behavior** Shows a task when any assignee name or username matches any entered value (OR logic). Matching is case-insensitive and requires an **exact string match** — partial matches are not supported (e.g. "Mig" does not match "Miguel"). An empty value shows all tasks regardless of assignee.
 
 ### Search keywords
 

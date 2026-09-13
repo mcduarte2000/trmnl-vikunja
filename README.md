@@ -22,6 +22,8 @@ gem install trmnl_preview
 trmnlp serve
 ```
 
+The preview is served at `http://127.0.0.1:4567/` (the `trmnlp serve` default). The four views are available at `/render/full.html`, `/render/half_horizontal.html`, `/render/half_vertical.html`, and `/render/quadrant.html`.
+
 #### Configuration note
 
 The plugin relies on the **`base_url`** variable to build the polling URL. **Do not use a hard‑coded URL**; instead ensure that `base_url` does **not** contain a trailing slash. The polling URL is constructed as:

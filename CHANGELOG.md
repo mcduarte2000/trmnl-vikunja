@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.2.4] - 2026-09-13
+
+### Change
+- Replaced the `bin/trmnlp` Docker wrapper (`docker run trmnl/trmnlp`) with a direct `trmnlp` gem invocation, since the project uses the local gem. Updated `AGENTS.md` "Running trmnlp" section to remove Docker references.
+- Clarified that the assignee filter requires an exact match (no partial matches) in `src/settings.yml` help text and `docs/filters.md`.
+
+### Documentation
+- Documented the local preview server address as `http://127.0.0.1:4567/` (the `trmnlp serve` default port) in `README.md`, `docs/testing.md`, and `AGENTS.md`, including the `/render/*.html` route paths and short aliases.
+- Noted that `trmnlp lint` must run under a UTF-8 locale (`LANG=en_US.UTF-8`) when invoked from the gem directly, otherwise it aborts with `invalid byte sequence in US-ASCII`.
+- Bumped the pinned `trmnlp_preview` path in `AGENTS.md` from `0.11.0` to `0.12.0`.
+
 ## [v1.2.3] - 2026-09-12
 
 ### Feature

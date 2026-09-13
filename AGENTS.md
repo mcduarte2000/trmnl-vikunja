@@ -203,11 +203,9 @@ only on `main`.
 
 ## Running trmnlp
 
-The `bin/trmnlp` script is provided as a convenience. It will use the local Ruby gem if available, falling back to the `trmnl/trmnlp` Docker image.
+The `bin/trmnlp` script is provided as a convenience wrapper for the `trmnlp` gem. It passes all arguments through to `trmnlp` directly, so commands like `bin/trmnlp serve`, `bin/trmnlp lint`, and `bin/trmnlp build` work from the project root.
 
 You can modify the `bin/trmnlp` script to set up environment variables (plugin secrets, etc.) before running the server.
-
-**Gem or Docker?** Install the gem if you already have Ruby >= 3.4 — it has the fastest startup. Use Docker for zero local setup.
 
 ### Installing via RubyGems
 
@@ -251,22 +249,26 @@ Run these checks after changes:
 ```sh
 node --check src/transform.js
 ruby -e 'require "yaml"; YAML.safe_load_file("src/settings.yml"); puts "settings YAML OK"'
-/opt/homebrew/lib/ruby/gems/4.0.0/gems/trmnl_preview-0.11.0/bin/trmnlp lint
+LANG=en_US.UTF-8 /opt/homebrew/lib/ruby/gems/4.0.0/gems/trmnl_preview-0.12.0/bin/trmnlp lint
 git diff --check
 ```
+
+`trmnlp lint` reads the Liquid files as UTF-8; if `LANG` is unset it aborts with `invalid byte sequence in US-ASCII`. Prefix the command with `LANG=en_US.UTF-8` (as above) or export it first.
 
 For layout changes, run the local preview:
 
 ```sh
-/opt/homebrew/lib/ruby/gems/4.0.0/gems/trmnl_preview-0.11.0/bin/trmnlp serve
+/opt/homebrew/lib/ruby/gems/4.0.0/gems/trmnl_preview-0.12.0/bin/trmnlp serve
 ```
 
-Check all four routes:
+The preview listens at `http://127.0.0.1:4567/`. Check all four routes:
 
-- `/full`
-- `/half_horizontal`
-- `/half_vertical`
-- `/quadrant`
+- `/render/full.html`
+- `/render/half_horizontal.html`
+- `/render/half_vertical.html`
+- `/render/quadrant.html`
+
+The short aliases `/full`, `/half_horizontal`, `/half_vertical`, and `/quadrant` also work.
 
 Verify populated, empty, filtered, completed, and error states when relevant.
 

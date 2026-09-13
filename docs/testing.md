@@ -22,16 +22,20 @@ Run these static checks first — they are cheap and catch the most common mista
 
 > **Lint note:** `trmnlp lint` checks that every custom field in `src/settings.yml` is referenced in a form field or markup. After renaming a setting key, ensure the new keyname is used everywhere and the old keyname is gone from `.trmnlp.yml` too.
 
+> **Lint locale:** when running the gem directly (not Docker), `trmnlp lint` reads the Liquid files as UTF-8. If `LANG` is unset it aborts with `invalid byte sequence in US-ASCII`; prefix the command with `LANG=en_US.UTF-8` (for example `LANG=en_US.UTF-8 /opt/homebrew/lib/ruby/gems/4.0.0/gems/trmnl_preview-0.12.0/bin/trmnlp lint`).
+
 ## 2. Render routes
 
-Every TRMNL frame must render without an HTTP error. Start a clean preview server (see §3) and request each route.
+Every TRMNL frame must render without an HTTP error. Start a clean preview server (see §3) and request each route. `trmnlp serve` binds to `127.0.0.1` and defaults to port `4567` (see `trmnlp/cli.rb`), so the local preview lives at `http://127.0.0.1:4567/`.
 
 | Route | Endpoint |
 | --- | --- |
-| Full | `http://localhost:4567/render/full.html` |
-| Half Horizontal | `http://localhost:4567/render/half_horizontal.html` |
-| Half Vertical | `http://localhost:4567/render/half_vertical.html` |
-| Quadrant | `http://localhost:4567/render/quadrant.html` |
+| Full | `http://127.0.0.1:4567/render/full.html` |
+| Half Horizontal | `http://127.0.0.1:4567/render/half_horizontal.html` |
+| Half Vertical | `http://127.0.0.1:4567/render/half_vertical.html` |
+| Quadrant | `http://127.0.0.1:4567/render/quadrant.html` |
+
+The short aliases `/full`, `/half_horizontal`, `/half_vertical`, and `/quadrant` also return the same views; the root `/` redirects (302).
 
 Each must return **HTTP 200**. Save each response to a file and assert:
 
@@ -40,7 +44,7 @@ Each must return **HTTP 200**. Save each response to a file and assert:
 
 ## 3. Starting a clean preview (IMPORTANT)
 
-The Docker preview server (`trmnlp serve`) loads `src/*.liquid`, `src/transform.js`, and `.trmnlp.yml` at startup and caches them in memory.
+The preview server (`trmnlp serve`) loads `src/*.liquid`, `src/transform.js`, and `.trmnlp.yml` at startup and caches them in memory. It listens on `127.0.0.1:4567` when run from the gem; the `bin/trmnlp` Docker wrapper publishes the same host port (`4567:4567`).
 
 - **Do NOT** reuse a server started before your edits — it still runs the old transform/config and will produce false errors.
 - To restart the server:
