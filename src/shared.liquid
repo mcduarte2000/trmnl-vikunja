@@ -87,9 +87,10 @@ COLOR POLICY:
   ════════════════════════════════════════════════════════════════
 {%- endcomment -%}
 
-{%- comment -%} Simple SVG icons for metadata display (calendar + person), used across all views. {%- endcomment -%}
+{%- comment -%} Simple SVG icons for metadata display (calendar + person + flag), used across all views. {%- endcomment -%}
 {%- capture icon_calendar -%}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="currentColor" style="display:inline;width:10px;height:10px;vertical-align:middle;"><path d="M2 2h8a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm0 2v6h8V4H2zm1-2V1h1v1h4V1h1v1H3z"/></svg>{%- endcapture -%}
 {%- capture icon_person -%}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="currentColor" style="display:inline;width:10px;height:10px;vertical-align:middle;"><circle cx="6" cy="3.5" r="2"/><path d="M2 11c0-3 2-5 4-5s4 2 4 5H2z"/></svg>{%- endcapture -%}
+{%- capture icon_flag -%}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="currentColor" style="display:inline;width:10px;height:10px;vertical-align:middle;"><path d="M2 1v10" stroke="currentColor" fill="none" stroke-width="1.2"/><path d="M2 1l6 2.5-6 3z"/></svg>{%- endcapture -%}
 
 {%- capture title_bar -%}
 <div class="title_bar" data-project-filter="{{ project_id }}" data-status-filter="{{ status_filter }}">

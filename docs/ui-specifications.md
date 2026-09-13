@@ -218,12 +218,13 @@ Do not add custom CSS for spacing, borders, alignment, or colors unless Framewor
 
 ## Metadata iconography
 
-Inline SVG icons are used for secondary metadata (due date and assignee). They are captured as Liquid variables in `src/shared.liquid` and available to all views:
+Inline SVG icons are used for secondary metadata (due date, assignee, and priority). Calendar and person icons are captured as Liquid variables in `src/shared.liquid`; the priority flag icon is also captured there. A `show_meta` flag gates the metadata row when any field has a value.
 
 - **Calendar icon** (`icon_calendar`): 12×12 viewBox, rectangle with top bar crossing. Precedes every due-date label.
 - **Person icon** (`icon_person`): 12×12 viewBox, circle head + body path. Precedes every assignee name.
+- **Priority icon** (`icon_flag`): 12×12 viewBox, pole with right-pointing flag triangle. Followed by the numeric priority value (1 = Low through 5 = Urgent). Omitted when priority is None (0).
 
-Both use `fill="currentColor"` so they inherit the surrounding label's text color. When both due date and assignee are visible, they sit in a `flex gap--small` row so they appear side by side instead of stacking.
+All icons use `fill="currentColor"` so they inherit the surrounding label's text color. When multiple metadata items are visible, they sit in a `flex gap--small` row so they appear side by side inline instead of stacking vertically.
 
 ## Visual acceptance checklist
 

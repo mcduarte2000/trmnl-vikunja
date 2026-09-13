@@ -5,13 +5,16 @@ All notable changes to this project will be documented in this file.
 ## [v1.2.4] - 2026-09-13
 
 ### Change
+- Added a small inline SVG flag icon (`icon_flag`) followed by the priority number (1–5) in the metadata row, shown when the task has a non-zero priority. Defined as a capture in `src/shared.liquid` alongside the calendar and person icons.
+- Refactored all metadata-row conditions to use a `show_meta` intermediate flag, avoiding Liquid `and`/`or` mixing that prevented the priority trigger from working when it was the only metadata field.
 - Replaced the text prefix `due` with a small inline SVG calendar icon before every due-date label across all frames (Task View and Kanban View).
 - Added a small inline SVG person icon before the first assignee name. In all views the assignee label sits next to the due-date label in a `flex gap--small` row instead of stacking vertically.
-- Defined both SVG icons as Liquid capture variables (`icon_calendar`, `icon_person`) in `src/shared.liquid` so every view can reference them without duplication.
+- Defined all SVG icons as Liquid capture variables (`icon_calendar`, `icon_person`, `icon_flag`) in `src/shared.liquid` so every view can reference them without duplication.
 - Replaced the `bin/trmnlp` Docker wrapper (`docker run trmnl/trmnlp`) with a direct `trmnlp` gem invocation, since the project uses the local gem. Updated `AGENTS.md` "Running trmnlp" section to remove Docker references.
 - Clarified that the assignee filter requires an exact match (no partial matches) in `src/settings.yml` help text and `docs/filters.md`.
 
 ### Documentation
+- Updated `docs/ui-specifications.md` to describe the priority signal-bar icon, calendar icon, and person icon pattern, along with the inline metadata row.
 - Documented the local preview server address as `http://127.0.0.1:4567/` (the `trmnlp serve` default port) in `README.md`, `docs/testing.md`, and `AGENTS.md`, including the `/render/*.html` route paths and short aliases.
 - Noted that `trmnlp lint` must run under a UTF-8 locale (`LANG=en_US.UTF-8`) when invoked from the gem directly, otherwise it aborts with `invalid byte sequence in US-ASCII`.
 - Bumped the pinned `trmnlp_preview` path in `AGENTS.md` from `0.11.0` to `0.12.0`.

@@ -47,7 +47,11 @@
                     {% else %}
                       <span class="title title--small text--wrap">{{ task.title }}</span>
                     {% endif %}
-                    {% if column.done == false and (task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil or task.assignees.size > 0) %}
+                    {%- assign show_meta = false -%}
+                    {% if task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}{%- assign show_meta = true -%}{% endif %}
+                    {% if task.assignees.size > 0 %}{%- assign show_meta = true -%}{% endif %}
+                    {% if task.priority %}{%- assign show_meta = true -%}{% endif %}
+                    {% if column.done == false and show_meta %}
                       <div class="flex gap--small">
                         {% if task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
                           <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ task.due_date | date: "%d %b" }}</span>
@@ -55,8 +59,11 @@
                         {% if task.assignees.size > 0 %}
                           <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_person }} {{ task.assignees[0].name }}</span>
                         {% endif %}
+                        {% if task.priority %}
+                          <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_flag }} {{ task.priority }}</span>
+                        {% endif %}
                       </div>
-                    {% endif %}
+                      {% endif %}
                   </div>
                 </div>
               {% endfor %}
@@ -122,7 +129,11 @@
                 {%- else -%}
                   <span class="title title--small lg:title--base" data-clamp="1">{{ task.title }}</span>
                 {%- endif -%}
-                {%- if due_text or task.assignees.size > 0 -%}
+                {%- assign show_meta = false -%}
+                {% if due_text %}{%- assign show_meta = true -%}{% endif %}
+                {% if task.assignees.size > 0 %}{%- assign show_meta = true -%}{% endif %}
+                {% if task.priority %}{%- assign show_meta = true -%}{% endif %}
+                {%- if show_meta -%}
                   <div class="flex gap--small">
                     {%- if due_text -%}
                       <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ due_text }}</span>
@@ -130,6 +141,9 @@
                     {%- if task.assignees.size > 0 -%}
                       <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_person }} {{ task.assignees[0].name }}</span>
                     {%- endif -%}
+                    {% if task.priority %}
+                      <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_flag }} {{ task.priority }}</span>
+                    {% endif %}
                   </div>
                 {%- endif -%}
               </div>

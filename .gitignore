@@ -1,3 +1,5 @@
 .trmnlp.yml
 copilot-instructions.md
 _build/
+.vscode/
+bin/
