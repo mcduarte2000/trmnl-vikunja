@@ -44,7 +44,7 @@ When `view_mode` is set to `kanban`, each of these routes will display the Kanba
 ### Full
 
 - Target: 800x480 landscape, 480x800 portrait; scale up for TRMNL X where supported.
-- Task View: two-column task grid with title, optional description, assignee, due date, and progress. Task View is unmasked by orientation.
+- Task View: two-column task grid with title, optional description, inline assignee (person icon) and due date (calendar icon) row, and progress. Task View is unmasked by orientation.
 - Kanban View: the Full frame always renders the standard horizontal Kanban, with columns flowing side by side regardless of orientation.
 - Orientation is detected at runtime from `trmnl.device.{width,height}` (portrait when `height > width`).
 - Kanban: horizontal status columns, top-aligned, vertical `divider--v` separators that span the full column height (`divider--v stretch-y`). Titles are centered with `text--center` (plus `w--full` so the centering spans the column) and a horizontal `divider--h` separates each title from its tasks. This matches Half Horizontal.
@@ -93,7 +93,7 @@ STATUS (N)
 
 Task title
 
-due 12 Feb
+[cal] 12 Feb  [person] Name
 
 Task title
 
@@ -108,7 +108,7 @@ Where:
 - Empty columns still show their header and `(0)` count.
 - The done bucket uses the API-defined `done_bucket_id`.
 - Each task row uses the Framework `.item` structure with an empty `.meta` element, producing a left gray meta bar without numbering.
-- The title is the primary row content. When `due_date` is valid, show a compact `due DD Mon` label below it.
+- The title is the primary row content. When `due_date` is valid, show a calendar icon followed by the formatted date. When the task has assignees, show a person icon followed by the first assignee's name. Both icons and labels sit inline in a single `flex gap--small` row, placed directly below the title.
 - Kanban headers are left-aligned within their columns, uppercase, and include the visible task count.
 - Kanban task items use priority-mapped Framework emphasis (`item--emphasis-1/2/3`) so high-priority tasks stand out against a plain meta bar, matching Task View.
 - Done-column task titles use a line-through treatment, and done-column due dates are omitted.
@@ -153,13 +153,14 @@ Spacing must be visible but compact enough for e-paper. If a frame overflows, re
 - Medium (2) uses `item--emphasis-1` (light).
 - Low (1) and none use default emphasis (no class).
 
-### Dates and progress
+### Dates, assignees, and progress
 
 - Never display Vikunja's no-date sentinel `0001-01-01T00:00:00Z`.
-- Full Task View may show assignee, due date, description, and progress.
-- Compact Task View may show relative due labels such as `Today`, `Tomorrow`, or an overdue label.
+- Full Task View may show assignee (prefixed with person SVG icon), due date (prefixed with calendar SVG icon), description, and progress.
+- Compact Task View may show relative due labels such as `Today`, `Tomorrow`, or an overdue label, each prefixed with the calendar icon.
+- When both assignee and due date are present, they sit inline in a single `flex gap--small` row: `[calendar] date  [person] name`.
 - Progress is converted from Vikunja's decimal value to a whole-number percentage.
-- Kanban View prioritizes status, title, and count; secondary metadata must not crowd the board.
+- Kanban View prioritizes status, title, and count; secondary metadata (due date and assignee) are shown on the same inline row and must not crowd the board.
 
 ## Empty and error states
 
@@ -214,6 +215,15 @@ Use these established classes and patterns:
 - Small gray text/labels on 1-bit devices: any `--small`/`--xsmall` text or label that uses a gray treatment (`text--gray-50`, `label--gray`) must also carry `1bit:text--black 1bit:text--regular` so it stays readable on 1-bit palettes.
 
 Do not add custom CSS for spacing, borders, alignment, or colors unless Framework 3.3 cannot express the requirement and the exception is documented here first.
+
+## Metadata iconography
+
+Inline SVG icons are used for secondary metadata (due date and assignee). They are captured as Liquid variables in `src/shared.liquid` and available to all views:
+
+- **Calendar icon** (`icon_calendar`): 12×12 viewBox, rectangle with top bar crossing. Precedes every due-date label.
+- **Person icon** (`icon_person`): 12×12 viewBox, circle head + body path. Precedes every assignee name.
+
+Both use `fill="currentColor"` so they inherit the surrounding label's text color. When both due date and assignee are visible, they sit in a `flex gap--small` row so they appear side by side instead of stacking.
 
 ## Visual acceptance checklist
 

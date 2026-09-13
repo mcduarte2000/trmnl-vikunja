@@ -73,8 +73,15 @@
                     {% else %}
                       <span class="{{ kanban_title_class }}"{{ kanban_title_clamp }}>{{ task.title }}</span>
                     {% endif %}
-                    {% if column.done == false and task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
-                      <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">due {{ task.due_date | date: "%d %b" }}</span>
+                    {% if column.done == false and (task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil or task.assignees.size > 0) %}
+                      <div class="flex gap--small">
+                        {% if task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
+                          <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ task.due_date | date: "%d %b" }}</span>
+                        {% endif %}
+                        {% if task.assignees.size > 0 %}
+                          <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_person }} {{ task.assignees[0].name }}</span>
+                        {% endif %}
+                      </div>
                     {% endif %}
                   </div>
                 </div>
@@ -123,11 +130,15 @@
               {% if task.description != "" and task.description != nil %}
                 <span class="description" data-clamp="1">{{ task.description | strip_html | truncate: 40 }}</span>
               {% endif %}
-              {% if task.assignees.size > 0 %}
-                <span class="description">{{ task.assignees[0].name }}</span>
-              {% endif %}
-              {% if task.due_date != "0001-01-01T00:00:00Z" %}
-                <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ task.due_date | date: "%b %d" }}</span>
+              {% if task.assignees.size > 0 or task.due_date != "0001-01-01T00:00:00Z" %}
+                <div class="flex gap--small">
+                  {% if task.assignees.size > 0 %}
+                    <span class="description">{{ icon_person }} {{ task.assignees[0].name }}</span>
+                  {% endif %}
+                  {% if task.due_date != "0001-01-01T00:00:00Z" %}
+                    <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ task.due_date | date: "%b %d" }}</span>
+                  {% endif %}
+                </div>
               {% endif %}
               {% if task.percent_done > 0 %}
                 <span class="label label--small">{{ task.percent_done | times: 100 | round: 0 }}%</span>

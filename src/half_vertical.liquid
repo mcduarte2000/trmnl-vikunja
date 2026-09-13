@@ -47,8 +47,15 @@
                     {% else %}
                       <span class="title title--small text--wrap">{{ task.title }}</span>
                     {% endif %}
-                    {% if column.done == false and task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
-                      <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">due {{ task.due_date | date: "%d %b" }}</span>
+                    {% if column.done == false and (task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil or task.assignees.size > 0) %}
+                      <div class="flex gap--small">
+                        {% if task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
+                          <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ task.due_date | date: "%d %b" }}</span>
+                        {% endif %}
+                        {% if task.assignees.size > 0 %}
+                          <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_person }} {{ task.assignees[0].name }}</span>
+                        {% endif %}
+                      </div>
                     {% endif %}
                   </div>
                 </div>
@@ -115,9 +122,14 @@
                 {%- else -%}
                   <span class="title title--small lg:title--base" data-clamp="1">{{ task.title }}</span>
                 {%- endif -%}
-                {%- if due_text -%}
+                {%- if due_text or task.assignees.size > 0 -%}
                   <div class="flex gap--small">
-                    <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ due_text }}</span>
+                    {%- if due_text -%}
+                      <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ due_text }}</span>
+                    {%- endif -%}
+                    {%- if task.assignees.size > 0 -%}
+                      <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_person }} {{ task.assignees[0].name }}</span>
+                    {%- endif -%}
                   </div>
                 {%- endif -%}
               </div>

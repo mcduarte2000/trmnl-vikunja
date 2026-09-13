@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 ## [v1.2.4] - 2026-09-13
 
 ### Change
+- Replaced the text prefix `due` with a small inline SVG calendar icon before every due-date label across all frames (Task View and Kanban View).
+- Added a small inline SVG person icon before the first assignee name. In all views the assignee label sits next to the due-date label in a `flex gap--small` row instead of stacking vertically.
+- Defined both SVG icons as Liquid capture variables (`icon_calendar`, `icon_person`) in `src/shared.liquid` so every view can reference them without duplication.
 - Replaced the `bin/trmnlp` Docker wrapper (`docker run trmnl/trmnlp`) with a direct `trmnlp` gem invocation, since the project uses the local gem. Updated `AGENTS.md` "Running trmnlp" section to remove Docker references.
 - Clarified that the assignee filter requires an exact match (no partial matches) in `src/settings.yml` help text and `docs/filters.md`.
 
