@@ -42,18 +42,14 @@ custom_fields:
   description: Your Vikunja instance URL (API path is added automatically)
   placeholder: https://app.vikunja.cloud
   default: https://app.vikunja.cloud
-  help_text: 'Enter your Vikunja URL without the /api/v1 suffix. Examples: http://https://my-domain.com:3456 or https://app.vikunja.cloud
-
-    '
+  help_text: 'Enter your Vikunja URL without the /api/v1 suffix. Examples: http://https://my-domain.com:3456 or https://app.vikunja.cloud'
 - keyname: cf_access_client_id
   field_type: password
   name: CF Access Client ID
   description: Cloudflare Access Client ID for Zero Trust tunnels
   placeholder: "(optional — only if behind Cloudflare Access)"
   default: ''
-  help_text: 'Only needed if your Vikunja instance is behind a Cloudflare Zero Trust tunnel. Leave empty otherwise.
-
-    '
+  help_text: Only needed if your Vikunja instance is behind a Cloudflare Zero Trust tunnel. Leave empty otherwise.
   optional: true
 - keyname: cf_access_client_secret
   field_type: password
@@ -61,10 +57,17 @@ custom_fields:
   description: Cloudflare Access Client Secret for Zero Trust tunnels
   placeholder: "(optional — only if behind Cloudflare Access)"
   default: ''
-  help_text: 'Only needed if your Vikunja instance is behind a Cloudflare Zero Trust tunnel. Leave empty otherwise.
-
-    '
+  help_text: Only needed if your Vikunja instance is behind a Cloudflare Zero Trust tunnel. Leave empty otherwise.
   optional: true
+- keyname: view_mode
+  field_type: select
+  name: View Mode
+  description: Choose how tasks are displayed
+  options:
+  - Task View (Simple List): task
+  - Task View (3 Priority Columns): task_priority
+  - Kanban View: kanban
+  default: task
 - keyname: status_filter
   field_type: select
   name: Task Status
@@ -90,9 +93,7 @@ custom_fields:
   field_type: number
   name: Project Number
   description: Vikunja project to show tasks from
-  help_text: 'Hover over the project in Vikunja to find its project number (an integer). Enter that number to show tasks from that project only. Leave empty to show tasks from all projects.
-
-    '
+  help_text: Hover over the project in Vikunja to find its project number (an integer). Enter that number to show tasks from that project only. Leave empty to show tasks from all projects.
   placeholder: '1'
   min: 1
   optional: true
@@ -103,9 +104,7 @@ custom_fields:
   description: Filter by assignee. Leave empty for all assignees.
   placeholder: Miguel
   default: ''
-  help_text: 'Enter one or more assignee names separated by commas (e.g. "Miguel,Ana"). A task matches only when an assignee''s name or username exactly equals one of the entered values — no partial matches. Leave empty to show all tasks regardless of assignee.
-
-    '
+  help_text: Enter one or more assignee names separated by commas (e.g. "Miguel,Ana"). A task matches only when an assignee's name or username exactly equals one of the entered values — no partial matches. Leave empty to show all tasks regardless of assignee.
   optional: true
 - keyname: search_query
   field_type: text
@@ -113,9 +112,7 @@ custom_fields:
   description: Filter by task title or description. Multiple terms = OR logic.
   placeholder: bug,fix,critical
   default: ''
-  help_text: 'Enter one or more keywords separated by commas (e.g. "bug,fix,critical"). A task matches if any keyword is found in its title or description. Leave empty for no search filter.
-
-    '
+  help_text: Enter one or more keywords separated by commas (e.g. "bug,fix,critical"). A task matches if any keyword is found in its title or description. Leave empty for no search filter.
   optional: true
 - keyname: show_favorites_only
   field_type: boolean
@@ -148,15 +145,6 @@ custom_fields:
   min: 1
   max: 10
   default: 6
-- keyname: view_mode
-  field_type: select
-  name: View Mode
-  description: Choose how tasks are displayed
-  options:
-  - Task View (Simple List): task
-  - Task View (3 Priority Columns): task_priority
-  - Kanban View: kanban
-  default: task
 name: Vikunja
 description: To‑do app to organize you life
 refresh_interval: 15
