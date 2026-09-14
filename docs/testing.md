@@ -67,12 +67,13 @@ cd "/Users/miguelduarte/Documents/AI Projects/TRMNL Vikunja" && \
 Configure `.trmnlp.yml`/settings for Task View (`view_mode: "task"`) and verify:
 
 - [ ] Filters combine with AND logic; empty filters do not exclude tasks.
-- [ ] Tasks sort by `updated` descending.
+- [ ] Tasks sort by priority descending, then due date ascending.
 - [ ] Output capped to `tasks_per_view`.
 - [ ] The title bar renders the configured `project_id` in the `data-project-filter` attribute (empty when "all projects").
 - [ ] Each frame (Full, Half Horizontal, Half Vertical, Quadrant) renders the task list within bounds.
 - [ ] The no-date sentinel (`0001-01-01T00:00:00Z`) is not displayed as a due date.
 - [ ] `percent_done` is displayed as a whole-number percentage.
+- [ ] Quadrant in landscape mode: task metadata (due date, assignee, priority) is hidden.
 
 ## 5. Kanban View regression checks
 
@@ -87,6 +88,7 @@ Configure `view_mode: "kanban"` with a valid `project_id` and verify:
 - [ ] Spacing exists between a column header and its first task, and between task rows.
 - [ ] Completed tasks remain distinguishable from active (semantic `label--success` handling).
 - [ ] With no `project_id`, the render shows a clear configuration message and does **not** silently fall back to Task View.
+- [ ] Quadrant in landscape mode: column headers, due dates, assignees, and priority metadata are hidden.
 
 ## 6. Filter regression checks (Per-Filter)
 

@@ -72,6 +72,7 @@ Use Framework 3.3 title and label utilities — never custom font declarations.
 | Column header | `title--small lg:title--base` | `title--small lg:title--base` | `title--small lg:title--base` | `title--small` | `title--small` |
 | Task title | `title--small` with `text--wrap` (no clamp) | `title--small` with `text--wrap` (no clamp) | `title--small` with `text--wrap` (no clamp) | `title--small` with `text--wrap` (no clamp) | `text--small` with `text--wrap` (no clamp) |
 | Task due label | `label--small label--gray` | `label--small label--gray` | `label--small label--gray` | `label--small label--gray` | `label--gray text--small` |
+| Title bar | Always shown | Always shown | Always shown | Always shown | Always shown |
 
 Every small gray element (the muted done-column title via `text--gray-50`, and the gray due label via `label--gray`) also carries `1bit:text--black 1bit:text--regular`. This keeps small gray text readable on 1-bit device palettes without escalating those labels to `label--inverted`. The override is applied in every frame and in both Task View and Kanban View.
 
@@ -87,6 +88,8 @@ Notes:
 - Kanban headers must never be clamped together with their counts. The count must always remain visible.
 - Header-to-task spacing uses `mt--small`; task-to-task spacing uses `gap--small`.
 - The done-column title line-through applies in all frames.
+- Quadrant Kanban column titles are hidden when the device is in landscape mode (detected at runtime from `trmnl.device.{width,height}`), recovering vertical space in this minimal postcard layout.
+- Quadrant also hides task metadata (due date, assignee, and priority) in landscape mode, for the same space reason. Only the task title remains visible.
 
 ## Orientation summary
 

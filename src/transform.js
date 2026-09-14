@@ -197,7 +197,14 @@ function applyTaskFilters(tasks, config) {
   result = filterByProject(result, config.project_id);
   result = filterByAssignee(result, config.assignee_names);
   result = filterBySearch(result, config.search_query);
-  return result.sort((a, b) => new Date(b.updated) - new Date(a.updated));
+  return result.sort((a, b) => {
+    const pA = a.priority || 0;
+    const pB = b.priority || 0;
+    if (pB !== pA) return pB - pA;
+    const da = hasValidDate(a.due_date) ? new Date(a.due_date).getTime() : Infinity;
+    const db = hasValidDate(b.due_date) ? new Date(b.due_date).getTime() : Infinity;
+    return da - db;
+  });
 }
 
 // ── Kanban helpers ──────────────────────────────────────────────

@@ -12,6 +12,13 @@
 {%- endcomment -%}
 
 {%- assign view_name = "quadrant" -%}
+{%- assign device_height = trmnl.device.height | default: 240 | plus: 0 -%}
+{%- assign device_width = trmnl.device.width | default: 400 | plus: 0 -%}
+{%- if device_height > device_width -%}
+  {%- assign is_portrait = true -%}
+{%- else -%}
+  {%- assign is_portrait = false -%}
+{%- endif -%}
 
 {% if view_mode == "kanban" %}
   {% if kanban_error != "" %}
@@ -29,7 +36,7 @@
       <div class="flex flex--col flex--left w--full gap">
         {% for column in data.buckets %}
           <div class="flex flex--col flex--left w--full px--small">
-            <span class="title title--small text--left">{{ column.title | upcase }} ({{ column.tasks.size }})</span>
+            <span class="title title--small text--left {% unless is_portrait %}hidden{% endunless %}">{{ column.title | upcase }} ({{ column.tasks.size }})</span>
             <div class="flex flex--col gap--small mt--small">
               {% for task in column.tasks %}
                 {%- comment -%} PRIORITY: emphasis 4=urgent, 3=high, 2=medium {%- endcomment -%}
@@ -55,7 +62,7 @@
                     {% if task.assignees.size > 0 %}{%- assign show_meta = true -%}{% endif %}
                     {% if task.priority %}{%- assign show_meta = true -%}{% endif %}
                     {% if column.done == false and show_meta %}
-                      <div class="flex gap--small">
+                      <div class="flex gap--small {% unless is_portrait %}hidden{% endunless %}">
                         {% if task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
                           <span class="label label--gray text--small 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ task.due_date | date: "%d %b" }}</span>
                         {% endif %}
@@ -132,8 +139,8 @@
                 {% if due_text %}{%- assign show_meta = true -%}{% endif %}
                 {% if task.assignees.size > 0 %}{%- assign show_meta = true -%}{% endif %}
                 {% if task.priority %}{%- assign show_meta = true -%}{% endif %}
-                {%- if show_meta -%}
-                  <div class="flex gap--small">
+                {%- if show_meta %}
+                  <div class="flex gap--small {% unless is_portrait %}hidden{% endunless %}">
                     {%- if due_text -%}
                       <span class="label label--gray text--small 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ due_text }}</span>
                     {%- endif -%}
@@ -162,3 +169,4 @@
 {% endif %}
 
 {{ title_bar }}
+

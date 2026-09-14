@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.2.5] - 2026-09-14
+
+### Change
+- Quadrant Kanban column titles and task metadata (due date, assignee, priority) are now hidden when the device is in landscape mode, recovering vertical space in this minimal 400×240 frame. Orientation is detected at runtime from `trmnl.device.{width,height}`; only the task title remains visible in landscape.
+- Task sorting changed from `updated` descending to priority descending (highest first) then due date ascending (soonest first). Tasks without priority sort below prioritized tasks; tasks without a due date sort below dated tasks. This applies to both Task View and Kanban View across all frames.
+
+### Documentation
+- Updated `docs/view-behavior.md`, `docs/ui-specifications.md`, and `docs/testing.md` to describe the landscape-mode hiding behavior on the Quadrant frame.
+- Updated `docs/user-stories.md`, `docs/architecture.md`, and `docs/filters.md` to describe the new sort order (priority desc → due date asc).
+
 ## [v1.2.4] - 2026-09-13
 
 ### Change

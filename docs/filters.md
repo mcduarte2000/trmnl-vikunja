@@ -10,7 +10,7 @@ For the formal behavior contract, see `docs/user-stories.md`. For the technical 
 
 - All configured filters combine with **AND logic** across different filter types. A task must satisfy every active filter to be shown.
 - Multiple values inside a **single** filter (comma-separated) use **OR logic**. A task is shown if it matches any of the entered values.
-- Filters are applied before sorting and limiting. The result is always sorted by most recently updated first, then capped to `tasks_per_view`.
+- Filters are applied before sorting and limiting. The result is sorted by priority descending (highest first), then by due date ascending (soonest first), then capped to `tasks_per_view`.
 - Empty filters do not exclude tasks. Leaving a filter unset means "show everything for this dimension."
 
 ## Filter order (data pipeline)
@@ -214,7 +214,7 @@ A task is shown only if **all** of these hold:
 - an assignee is `Miguel` or `Ana` (case-insensitive)
 - `api` or `fix` appears in the title or description
 
-The result is then sorted by `updated` descending and limited to `6` tasks.
+The result is then sorted by priority descending (highest first), then by due date ascending (soonest first), and limited to `6` tasks.
 
 ## Empty results
 

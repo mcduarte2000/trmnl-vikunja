@@ -154,7 +154,7 @@ Kanban View returns the bucket columns under `data.buckets` as `[{ id, title, do
 
 On failure, Kanban View returns an empty `data.buckets` with a human-readable `kanban_error`.
 
-Sort by `updated` descending and apply `tasks_per_view` after all filters. Preserve task fields needed by the templates, including `title`, `description`, `done`, `percent_done`, `due_date`, `assignees`, `priority`, and `project_id`. Credentials must never appear in the output.
+Sort by priority descending (highest first), then by due date ascending (soonest first). Tasks without priority sort below tasks with priority; tasks without a due date sort below tasks with a due date. Apply `tasks_per_view` after all filters and sorting. Preserve task fields needed by the templates, including `title`, `description`, `done`, `percent_done`, `due_date`, `assignees`, `priority`, and `project_id`. Credentials must never appear in the output.
 
 ### Shared presentation: `src/shared.liquid`
 

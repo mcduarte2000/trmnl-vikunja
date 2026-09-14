@@ -81,6 +81,7 @@ When `view_mode` is set to `kanban`, each of these routes will display the Kanba
 - Keep only the title and essential status information.
 - Use the smallest practical title scale and avoid descriptions.
 - **Task titles are rendered in a block element without `data-clamp="1"` to enable natural word‑wrapping for long titles.**
+- **Kanban column titles (headers) are hidden on the Quadrant frame when the device is in landscape mode**, detected at runtime from `trmnl.device.{width,height}`. Task metadata (due date, assignee, and priority) are also hidden in landscape. Only the task title remains visible. This recovers vertical space in a landscape mashup slot — the 400x240 frame is too narrow for secondary metadata in landscape orientation.
 
 > **Orientation note:** Quadrant is a portrait frame. Kanban columns stack vertically, not horizontally. See `docs/view-behavior.md` for the frame-by-frame column direction and font rules.
 
@@ -242,5 +243,6 @@ Before accepting a UI change, verify all four templates:
 - [ ] Small gray text/labels in all frames carry the `1bit:text--black 1bit:text--regular` overrides.
 - [ ] Task View still renders correctly.
 - [ ] The preview is checked in both HTML and PNG mode when available.
+- [ ] Quadrant Kanban column titles and task metadata are hidden in landscape mode.
 - [ ] `trmnlp lint` passes.
 - [ ] `git diff --check` passes.
