@@ -153,7 +153,8 @@ custom_fields:
   name: View Mode
   description: Choose how tasks are displayed
   options:
-  - Task View: task
+  - Task View (Simple List): task
+  - Task View (3 Priority Columns): task_priority
   - Kanban View: kanban
   default: task
 name: Vikunja
