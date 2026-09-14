@@ -3,3 +3,4 @@ copilot-instructions.md
 _build/
 .vscode/
 bin/
+.kilo/

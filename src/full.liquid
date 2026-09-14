@@ -76,7 +76,8 @@
                     {%- assign show_meta = false -%}
                     {% if task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}{%- assign show_meta = true -%}{% endif %}
                     {% if task.assignees.size > 0 %}{%- assign show_meta = true -%}{% endif %}
-                    {% if task.priority %}{%- assign show_meta = true -%}{% endif %}
+                    {%- assign pnum = task.priority | default: 0 | plus: 0 -%}
+                    {% if pnum > 0 %}{%- assign show_meta = true -%}{% endif %}
                     {% if column.done == false and show_meta %}
                       <div class="flex gap--small">
                         {% if task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
@@ -85,7 +86,8 @@
                         {% if task.assignees.size > 0 %}
                           <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_person }} {{ task.assignees[0].name }}</span>
                         {% endif %}
-                        {% if task.priority %}
+                        {%- assign pnum = task.priority | default: 0 | plus: 0 -%}
+                        {% if pnum > 0 %}
                           <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_flag }} {{ task.priority }}</span>
                         {% endif %}
                       </div>
@@ -140,7 +142,8 @@
               {%- assign show_meta = false -%}
               {% if task.due_date != "0001-01-01T00:00:00Z" %}{%- assign show_meta = true -%}{% endif %}
               {% if task.assignees.size > 0 %}{%- assign show_meta = true -%}{% endif %}
-              {% if task.priority %}{%- assign show_meta = true -%}{% endif %}
+              {%- assign pnum = task.priority | default: 0 | plus: 0 -%}
+              {% if pnum > 0 %}{%- assign show_meta = true -%}{% endif %}
               {% if show_meta %}
                 <div class="flex gap--small">
                   {% if task.assignees.size > 0 %}
@@ -149,7 +152,8 @@
                   {% if task.due_date != "0001-01-01T00:00:00Z" %}
                     <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ task.due_date | date: "%b %d" }}</span>
                   {% endif %}
-                  {% if task.priority %}
+                  {%- assign pnum = task.priority | default: 0 | plus: 0 -%}
+                  {% if pnum > 0 %}
                     <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_flag }} {{ task.priority }}</span>
                   {% endif %}
                 </div>
