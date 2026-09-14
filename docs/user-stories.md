@@ -167,7 +167,7 @@ Feature: Filter task ownership and content
 ## US-005: Select the display view
 
 **As a** TRMNL plugin user  
-**I want** to choose between Task View and Kanban View  
+**I want** to choose between Simple List, Priority Columns, and Kanban View  
 **So that** I can see my Vikunja work in the format that best matches how I plan it.
 
 ### Acceptance criteria
@@ -175,10 +175,18 @@ Feature: Filter task ownership and content
 ```gherkin
 Feature: Select the display view
 
-  Scenario: Configure Task View
-    Given I select "Task View" in the View Mode setting
+  Scenario: Configure Task View (Simple List)
+    Given I select "Task View (Simple List)" in the View Mode setting
     When the plugin renders
     Then it uses the task-list layouts for the selected TRMNL frame
+    And it applies the configured task filters
+
+  Scenario: Configure Task View (3 Priority Columns)
+    Given I select "Task View (3 Priority Columns)" in the View Mode setting
+    When the plugin renders
+    Then it splits tasks into three priority columns
+    And each column is labeled by priority tier
+    And tasks appear in their matching column
     And it applies the configured task filters
 
   Scenario: Configure Kanban View
@@ -190,7 +198,7 @@ Feature: Select the display view
   Scenario: Use Task View by default
     Given I do not change the View Mode setting
     When the plugin renders
-    Then it uses Task View
+    Then it uses Task View (Simple List)
 
   Scenario: Keep the view setting below project selection
     Given I open the TRMNL plugin settings

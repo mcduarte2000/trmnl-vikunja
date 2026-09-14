@@ -165,13 +165,14 @@ Each filter section lists the display label and the attributes defined in `src/s
 | Description | Choose how tasks are displayed |
 | Help text | — |
 | Type | Select |
-| Options | Task View (`task`), Kanban View (`kanban`) |
+| Options | Task View (Simple List) (`task`), Task View (3 Priority Columns) (`task_priority`), Kanban View (`kanban`) |
 | Default | `task` |
 | Placeholder | — |
 
 This is not a task filter but chooses the rendering layout:
 
-- `task` uses the task-list layouts for the selected frame.
+- `task` uses the task-list layouts for the selected frame (default).
+- `task_priority` splits tasks into three priority columns (Urgent/High, Medium, Low/None) — _not yet implemented_.
 - `kanban` requires a project number and renders the selected project's buckets as status columns.
 
 ### Tasks per view
