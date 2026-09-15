@@ -55,7 +55,7 @@
                     {% if column.done == false and show_meta %}
                       <div class="flex gap--small">
                         {% if task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
-                          <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ task.due_date | date: "%d %b" }}</span>
+                          <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ task.due_date | l_date: "%d %b", trmnl.user.locale }}</span>
                         {% endif %}
                         {% if task.assignees.size > 0 %}
                           <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_person }} {{ task.assignees[0].name }}</span>
@@ -107,7 +107,7 @@
             {%- comment -%} DUE DATE: relative format {%- endcomment -%}
             {%- assign due_text = nil -%}
             {%- if task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil -%}
-              {%- assign now_s = "now" | date: "%s" | plus: 0 -%}
+              {%- assign now_s = "now" | date: "%s" | plus: trmnl.user.utc_offset | default: 0 | plus: 0 -%}
               {%- assign due_s = task.due_date | date: "%s" | plus: 0 -%}
               {%- assign day_diff = due_s | minus: now_s | divided_by: 86400 -%}
               {%- if day_diff == 0 -%}
@@ -118,7 +118,7 @@
                 {%- assign overdue_days = day_diff | abs -%}
                 {%- assign due_text = "overdue by " | append: overdue_days | append: " days" -%}
               {%- else -%}
-                {%- assign due_text = task.due_date | date: "%d/%m" -%}
+                {%- assign due_text = task.due_date | l_date: "%d/%m", trmnl.user.locale -%}
               {%- endif -%}
             {%- endif -%}
 

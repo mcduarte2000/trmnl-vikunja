@@ -226,3 +226,4 @@ Empty results are a valid state. When no tasks pass the filters, the layouts ren
 - `docs/user-stories.md` — functional contract and Gherkin acceptance criteria.
 - `docs/architecture.md` — data flow, filter pipeline, and output contract.
 - `docs/ui-specifications.md` — how filtered results render on each frame.
+- [TRMNL Custom Plugin Filters](https://help.trmnl.com/en/articles/10347358-custom-plugin-filters) — reference for `l_date`, `json`, and other TRMNL-specific Liquid filters used in the templates.

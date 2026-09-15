@@ -81,7 +81,7 @@
                     {% if column.done == false and show_meta %}
                       <div class="flex gap--small">
                         {% if task.due_date != "0001-01-01T00:00:00Z" and task.due_date != nil %}
-                          <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ task.due_date | date: "%d %b" }}</span>
+                          <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ task.due_date | l_date: "%d %b", trmnl.user.locale }}</span>
                         {% endif %}
                         {% if task.assignees.size > 0 %}
                           <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_person }} {{ task.assignees[0].name }}</span>
@@ -149,7 +149,7 @@
                     <span class="description">{{ icon_person }} {{ task.assignees[0].name }}</span>
                   {% endif %}
                   {% if task.due_date != "0001-01-01T00:00:00Z" %}
-                    <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ task.due_date | date: "%b %d" }}</span>
+                    <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ task.due_date | l_date: "%b %d", trmnl.user.locale }}</span>
                   {% endif %}
                   {% if pnum > 0 %}
                     <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_flag }} {{ task.priority }}</span>

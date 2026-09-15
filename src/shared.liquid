@@ -56,6 +56,8 @@ COLOR POLICY:
   `text--gray-50` or `label--gray`) can be hard to read on 1-bit palettes —
   always add `1bit:text--black 1bit:text--regular` to those classes to keep
   them readable without jumping all the way to `label--inverted`.
+- Debugging: use `{{ data | json }}` in a template to inspect the full data
+  payload at render time (TRMNL custom filter, see Custom Plugin Filters page).
 {%- endcomment -%}
 
 {%- comment -%}
