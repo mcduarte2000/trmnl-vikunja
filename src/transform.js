@@ -184,11 +184,10 @@ function filterBySearch(tasks, searchQueryStr) {
 }
 
 /**
- * Applies the documented filter pipeline in order. Returns filtered tasks
- * sorted by priority descending then due date ascending. The caller decides
- * how to limit.
+ * Applies the documented filter pipeline in order, then sorts using the
+ * provided comparator. The caller decides how to limit.
  */
-function applyTaskFilters(tasks, config) {
+function applyTaskFilters(tasks, config, sortFn) {
   let result = Array.isArray(tasks) ? tasks : [];
   result = filterByStatus(result, config.status_filter);
   result = filterByFavorites(result, config.show_favorites_only);
@@ -198,14 +197,35 @@ function applyTaskFilters(tasks, config) {
   result = filterByProject(result, config.project_id);
   result = filterByAssignee(result, config.assignee_names);
   result = filterBySearch(result, config.search_query);
-  return result.sort((a, b) => {
-    const pA = a.priority || 0;
-    const pB = b.priority || 0;
-    if (pB !== pA) return pB - pA;
-    const da = hasValidDate(a.due_date) ? new Date(a.due_date).getTime() : Infinity;
-    const db = hasValidDate(b.due_date) ? new Date(b.due_date).getTime() : Infinity;
-    return da - db;
-  });
+  return result.sort(sortFn || sortByPriorityThenDue);
+}
+
+/**
+ * Sort by priority descending (highest first), then due date ascending.
+ * Tasks without priority sort below; tasks without due date sort below.
+ * Used by Kanban View.
+ */
+function sortByPriorityThenDue(a, b) {
+  const pA = a.priority || 0;
+  const pB = b.priority || 0;
+  if (pB !== pA) return pB - pA;
+  const da = hasValidDate(a.due_date) ? new Date(a.due_date).getTime() : Infinity;
+  const db = hasValidDate(b.due_date) ? new Date(b.due_date).getTime() : Infinity;
+  return da - db;
+}
+
+/**
+ * Sort by due date ascending (soonest first), then priority descending.
+ * Tasks without a due date sort after all dated tasks, ordered by priority desc.
+ * Used by Simple List (Task View).
+ */
+function sortByDueThenPriority(a, b) {
+  const da = hasValidDate(a.due_date) ? new Date(a.due_date).getTime() : Infinity;
+  const db = hasValidDate(b.due_date) ? new Date(b.due_date).getTime() : Infinity;
+  if (da !== db) return da - db;
+  const pA = a.priority || 0;
+  const pB = b.priority || 0;
+  return pB - pA;
 }
 
 // ── Kanban helpers ──────────────────────────────────────────────
@@ -319,7 +339,7 @@ async function transform(input) {
     }
   }
 
-  const tasks = applyTaskFilters(input.data, config);
+  const tasks = applyTaskFilters(input.data, config, sortByDueThenPriority);
   const limit = parseInt(config.tasks_per_view, 10) || 6;
 
   return {

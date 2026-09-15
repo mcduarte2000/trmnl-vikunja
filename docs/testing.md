@@ -67,7 +67,8 @@ cd "/Users/miguelduarte/Documents/AI Projects/TRMNL Vikunja" && \
 Configure `.trmnlp.yml`/settings for Task View (`view_mode: "task"`) and verify:
 
 - [ ] Filters combine with AND logic; empty filters do not exclude tasks.
-- [ ] Tasks sort by priority descending, then due date ascending.
+- [ ] Task View sorts by due date ascending, then priority descending.
+- [ ] Kanban View sorts by priority descending, then due date ascending.
 - [ ] Output capped to `tasks_per_view`.
 - [ ] The title bar renders the configured `project_id` in the `data-project-filter` attribute (empty when "all projects").
 - [ ] Each frame (Full, Half Horizontal, Half Vertical, Quadrant) renders the task list within bounds.

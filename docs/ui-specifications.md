@@ -45,6 +45,7 @@ When `view_mode` is set to `kanban`, each of these routes will display the Kanba
 
 - Target: 800x480 landscape, 480x800 portrait; scale up for TRMNL X where supported.
 - Task View: two-column task grid with title, optional description, inline assignee (person icon) and due date (calendar icon) row, and progress. Task View is unmasked by orientation.
+- **The two-column grid fills left column first (top to bottom), then right column.** The sorted task list is split in half: the first `ceil(n/2)` items populate the left column, the remainder populate the right column.
 - Kanban View: the Full frame always renders the standard horizontal Kanban, with columns flowing side by side regardless of orientation.
 - Orientation is detected at runtime from `trmnl.device.{width,height}` (portrait when `height > width`).
 - Kanban: horizontal status columns, top-aligned, vertical `divider--v` separators that span the full column height (`divider--v stretch-y`). Titles are centered with `text--center` (plus `w--full` so the centering spans the column) and a horizontal `divider--h` separates each title from its tasks. This matches Half Horizontal.
@@ -54,7 +55,8 @@ When `view_mode` is set to `kanban`, each of these routes will display the Kanba
 ### Half Horizontal
 
 - Target: 800x240.
-- Task View: compact two-column-capable task queue.
+- Task View: compact two-column-capable task queue that fills left column first (top to bottom), then right column.
+- **The two-column layout fills left column first**, matching Full's approach.
 - Kanban View: horizontal status columns, top-aligned.
 - Kanban separators: vertical `divider--v stretch-y` between adjacent columns, reaching the bottom edge.
 - Column titles are centered (`text--center` + `w--full`); a horizontal `divider--h` separates each title from its tasks.

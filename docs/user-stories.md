@@ -17,7 +17,7 @@ As a Vikunja user, I want a reliable, glanceable view of the tasks that matter t
 - `percent_done` is a decimal from `0` to `1` and is displayed as a whole-number percentage.
 - Multiple values in a comma-separated filter use OR logic within that filter.
 - All configured filters combine with AND logic across different filter types.
-- Tasks are sorted by priority descending (highest first), then by due date ascending (soonest first). Tasks without a priority sort below tasks with priority; tasks without a due date sort below tasks with a due date. After sorting, results are limited to the configured number of tasks.
+- Tasks are sorted by priority descending (highest first), then by due date ascending (soonest first) in Kanban View. In Task View (Simple List), tasks sort by due date ascending first, then priority descending; tasks without a due date sort by priority after all dated tasks. After sorting, results are limited to the configured number of tasks.
 - Empty results are a valid state and must produce a useful message rather than a broken layout.
 
 ## US-001: Connect a Vikunja instance
@@ -340,18 +340,20 @@ Feature: Filter favorites and due dates
 ```gherkin
 Feature: Prepare the task list
 
-  Scenario: Sort tasks by priority then due date
-    Given multiple tasks pass all filters
+  Scenario: Sort tasks by due date then priority (Simple List)
+    Given multiple tasks pass all filters in Task View
+    When the result is prepared
+    Then tasks with an earlier due date appear before tasks with a later due date
+    And among tasks with the same due date, higher priority tasks appear first
+    And tasks without a due date sort after all dated tasks, ordered by priority descending
+
+  Scenario: Sort tasks by priority then due date (Kanban View)
+    Given multiple tasks pass all filters in Kanban View
     When the result is prepared
     Then tasks with a higher priority appear before tasks with a lower priority
     And among tasks with the same priority, tasks due sooner appear first
     And tasks without a priority sort below tasks with a priority
     And tasks without a due date sort below tasks with a due date
-
-  Scenario: Sort by recency
-    Given multiple tasks pass all filters
-    When the result is prepared
-    Then the most recently updated task appears first
 
   Scenario: Limit the number of tasks
     Given Tasks Per View is set to a valid value
