@@ -86,7 +86,6 @@
                         {% if task.assignees.size > 0 %}
                           <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_person }} {{ task.assignees[0].name }}</span>
                         {% endif %}
-                        {%- assign pnum = task.priority | default: 0 | plus: 0 -%}
                         {% if pnum > 0 %}
                           <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_flag }} {{ task.priority }}</span>
                         {% endif %}
@@ -152,7 +151,6 @@
                   {% if task.due_date != "0001-01-01T00:00:00Z" %}
                     <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_calendar }} {{ task.due_date | date: "%b %d" }}</span>
                   {% endif %}
-                  {%- assign pnum = task.priority | default: 0 | plus: 0 -%}
                   {% if pnum > 0 %}
                     <span class="label label--small label--gray 1bit:text--black 1bit:text--regular">{{ icon_flag }} {{ task.priority }}</span>
                   {% endif %}

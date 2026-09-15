@@ -7,6 +7,13 @@ All notable changes to this project will be documented in this file.
 ### Fix
 - Fixed priority-0 tasks displaying the flag icon and priority metadata across all views. The Liquid `{% if task.priority %}` and `{% if task.priority != "0" %}` conditions evaluated to `true` for numeric `0` because Liquid's `!=` does not coerce types (number `0` ≠ string `"0"`). Changed to `{% assign pnum = task.priority | default: 0 | plus: 0 %}{% if pnum > 0 %}` which properly coerces both number and string forms before comparison.
 
+### Change
+- Removed 8 redundant `{%- assign pnum = ... %}` lines across the four templates. Each task section now assigns `pnum` once and reuses it for the flag display gate.
+
+### Documentation
+- Updated `src/shared.liquid` guidance comments: corrected sort order (priority desc → due date asc), priority label (Highest 4, not Urgent 4), and quadrant description.
+- Updated `src/transform.js` JSDoc to describe the actual sort order (priority desc → due date asc).
+
 ## [v1.2.5] - 2026-09-14
 
 ### Change

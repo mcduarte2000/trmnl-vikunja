@@ -70,7 +70,6 @@
                         {% if task.assignees.size > 0 %}
                           <span class="label label--gray text--small 1bit:text--black 1bit:text--regular">{{ icon_person }} {{ task.assignees[0].name }}</span>
                         {% endif %}
-                        {%- assign pnum = task.priority | default: 0 | plus: 0 -%}
                         {% if pnum > 0 %}
                           <span class="label label--gray text--small 1bit:text--black 1bit:text--regular">{{ icon_flag }} {{ task.priority }}</span>
                         {% endif %}
@@ -150,7 +149,6 @@
                     {%- if task.assignees.size > 0 -%}
                       <span class="label label--gray text--small 1bit:text--black 1bit:text--regular">{{ icon_person }} {{ task.assignees[0].name }}</span>
                     {%- endif -%}
-                    {%- assign pnum = task.priority | default: 0 | plus: 0 -%}
                     {% if pnum > 0 %}
                       <span class="label label--gray text--small 1bit:text--black 1bit:text--regular">{{ icon_flag }} {{ task.priority }}</span>
                     {% endif %}

@@ -185,7 +185,8 @@ function filterBySearch(tasks, searchQueryStr) {
 
 /**
  * Applies the documented filter pipeline in order. Returns filtered tasks
- * sorted by `updated` descending. The caller decides how to limit.
+ * sorted by priority descending then due date ascending. The caller decides
+ * how to limit.
  */
 function applyTaskFilters(tasks, config) {
   let result = Array.isArray(tasks) ? tasks : [];
