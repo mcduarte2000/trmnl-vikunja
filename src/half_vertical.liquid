@@ -126,9 +126,9 @@
               <div class="meta"></div>
               <div class="content">
                 {%- if task.done -%}
-                  <span class="title title--small lg:title--base text--gray-50 1bit:text--black 1bit:text--regular" style="text-decoration: line-through;" data-clamp="1">{{ task.title }}</span>
+                  <span class="title title--small lg:title--base text--wrap text--gray-50 1bit:text--black 1bit:text--regular" style="text-decoration: line-through;" data-clamp="1">{{ task.title }}</span>
                 {%- else -%}
-                  <span class="title title--small lg:title--base" data-clamp="1">{{ task.title }}</span>
+                  <span class="title title--small lg:title--base text--wrap" data-clamp="1">{{ task.title }}</span>
                 {%- endif -%}
                 {%- assign show_meta = false -%}
                 {% if due_text %}{%- assign show_meta = true -%}{% endif %}

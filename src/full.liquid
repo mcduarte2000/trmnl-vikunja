@@ -119,7 +119,7 @@
 
   <div class="layout layout--col gap">
     {% if filtered_tasks.size > 0 %}
-      <div class="columns" data-overflow-max-cols="2">
+      <div class="grid grid--cols-2">
         <div class="column">
           {% for task in filtered_tasks limit: half %}
             {%- comment -%} PRIORITY: emphasis 4=urgent, 3=high, 2=medium {%- endcomment -%}
@@ -155,9 +155,9 @@
               <div class="meta"></div>
               <div class="content">
                 {%- if task.done -%}
-                  <span class="title title--small lg:title--base text--gray-50 1bit:text--black 1bit:text--regular" style="text-decoration: line-through;">{{ task.title }}</span>
+                  <span class="title title--small lg:title--base text--wrap text--gray-50 1bit:text--black 1bit:text--regular" style="text-decoration: line-through;">{{ task.title }}</span>
                 {%- else -%}
-                  <span class="title title--small lg:title--base">{{ task.title }}</span>
+                  <span class="title title--small lg:title--base text--wrap">{{ task.title }}</span>
                 {%- endif -%}
                 {%- assign show_meta = false -%}
                 {% if due_text %}{%- assign show_meta = true -%}{% endif %}
@@ -216,9 +216,9 @@
               <div class="meta"></div>
               <div class="content">
                 {%- if task.done -%}
-                  <span class="title title--small lg:title--base text--gray-50 1bit:text--black 1bit:text--regular" style="text-decoration: line-through;">{{ task.title }}</span>
+                  <span class="title title--small lg:title--base text--wrap text--gray-50 1bit:text--black 1bit:text--regular" style="text-decoration: line-through;">{{ task.title }}</span>
                 {%- else -%}
-                  <span class="title title--small lg:title--base">{{ task.title }}</span>
+                  <span class="title title--small lg:title--base text--wrap">{{ task.title }}</span>
                 {%- endif -%}
                 {%- assign show_meta = false -%}
                 {% if due_text %}{%- assign show_meta = true -%}{% endif %}
