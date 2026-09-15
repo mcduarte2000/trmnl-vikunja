@@ -37,6 +37,44 @@ Use these references to ground future Liquid work and resolve presentation quest
 - [Liquid for Designers — Standard Filters](https://github.com/shopify/liquid/wiki/liquid-for-designers#standard-filters) — a concise cheat sheet for **parsing and re-formatting liquid-injected data** (e.g. formatting dates, truncation, number formatting). Refer to it when you need to shape transformed data inside the template rather than in `src/transform.js`.
 - [TRMNL Framework 3.3](https://trmnl.com/framework/docs/3.3/v3_overview) — the **official TRMNL Framework 3.3 reference** for available classes, layout utilities, and conventions. Consult it to confirm a presentation requirement is expressible with a supported framework class before considering custom CSS (which this project avoids).
 
+## Recommended MCP Servers
+
+These MCP servers provide source-level access to the tools this plugin depends on. Add them to your `~/.config/kilo/kilo.jsonc` under the `"mcp"` section for the AI assistant to reference them during development:
+
+```jsonc
+{
+  "mcp": {
+    "liquid Docs": {
+      "type": "remote",
+      "url": "https://gitmcp.io/Shopify/liquid",
+      "enabled": true
+    },
+    "trmnl-liquid Docs": {
+      "type": "remote",
+      "url": "https://gitmcp.io/usetrmnl/trmnl-liquid",
+      "enabled": true
+    },
+    "trmnl-framework Docs": {
+      "type": "remote",
+      "url": "https://gitmcp.io/usetrmnl/trmnl-framework",
+      "enabled": true
+    },
+    "plugins-docs": {
+      "type": "remote",
+      "url": "https://gitmcp.io/usetrmnl/plugins",
+      "enabled": true
+    }
+  }
+}
+```
+
+| Server | Repository | Purpose |
+|---|---|---|
+| `liquid Docs` | Shopify/liquid | Core Liquid templating engine source — verify filter/tag behavior against official implementation |
+| `trmnl-liquid Docs` | usetrmnl/trmnl-liquid | TRMNL custom Liquid filters source (`l_date`, `json`, `random_number`, `qr_code`, etc.) |
+| `trmnl-framework Docs` | usetrmnl/trmnl-framework | Framework 3.x source — CSS utilities, components, layout classes, device profiles |
+| `plugins-docs` | usetrmnl/plugins | Community plugin examples and recipes for pattern reference |
+
 Rule of thumb: prefer core Liquid first, then a supported TRMNL custom filter, and keep any `src/transform.js` data reformatting out of the templates.
 
 ## Plugin Structure
