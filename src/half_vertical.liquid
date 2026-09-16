@@ -93,13 +93,12 @@
       <div class="columns" data-overflow-max-cols="1">
         <div class="column">
           {% for task in filtered_tasks %}
-            {%- comment -%} PRIORITY: emphasis 4=urgent, 3=high, 2=medium {%- endcomment -%}
-            {%- if task.priority == 4 -%}
+            {%- comment -%} PRIORITY: emphasis 5=urgent, 4=high, 2-3=medium {%- endcomment -%}
+            {%- assign p = task.priority | default: 0 | plus: 0 -%}
+            {%- if p >= 4 -%}
               {%- assign emphasis_class = "item--emphasis-3" -%}
-            {%- elsif task.priority == 3 -%}
+            {%- elsif p >= 2 -%}
               {%- assign emphasis_class = "item--emphasis-2" -%}
-            {%- elsif task.priority == 2 -%}
-              {%- assign emphasis_class = "item--emphasis-1" -%}
             {%- else -%}
               {%- assign emphasis_class = "" -%}
             {%- endif -%}
