@@ -117,7 +117,7 @@
   {%- assign half = filtered_tasks.size | plus: 1 | divided_by: 2 -%}
   {%- if half < 1 -%}{%- assign half = 1 -%}{%- endif -%}
 
-  <div class="layout layout--col gap">
+  <div class="layout layout--col layout--top gap">
     {% if filtered_tasks.size > 0 %}
       <div class="columns" data-overflow-cols="2">
         <div class="column">
