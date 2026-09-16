@@ -119,7 +119,7 @@
 
   <div class="layout layout--col gap">
     {% if filtered_tasks.size > 0 %}
-      <div class="grid grid--cols-2">
+      <div class="columns" data-overflow-cols="2">
         <div class="column">
           {% for task in filtered_tasks limit: half %}
             {%- comment -%} PRIORITY: emphasis 4=urgent, 3=high, 2=medium {%- endcomment -%}
