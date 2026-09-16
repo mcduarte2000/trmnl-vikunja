@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [v1.2.8] - 2026-09-16
 
 ### Change
 - Full Task View now uses `columns` with `data-overflow-cols="2"` to force exactly 2 columns instead of `data-overflow-max-cols` (best-fit) which collapsed to a single column on large frames. Uses the same relative due-date logic, compact card style, and layout approach as Half Horizontal.
