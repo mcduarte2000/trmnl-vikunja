@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Change
+- Full Task View now uses `columns` with `data-overflow-cols="2"` to force exactly 2 columns instead of `data-overflow-max-cols` (best-fit) which collapsed to a single column on large frames. Uses the same relative due-date logic, compact card style, and layout approach as Half Horizontal.
+- Removed `data-clamp="1"` from Half Horizontal and Half Vertical Task View titles — it conflicted with `text--wrap` by enforcing single-line truncation via `-webkit-line-clamp`. Long titles now wrap naturally.
+- Updated priority emphasis mapping across all four Task View branches to handle Vikunja's 0–5 priority range: priorities 0–1 get no emphasis bar, 2–3 map to `item--emphasis-2`, and 4–5 map to `item--emphasis-3`. Uses range comparisons with string-to-number coercion instead of exact equality checks.
+
+### Documentation
+- Updated `src/shared.liquid` guidance to reflect the new emphasis mapping and removed obsolete `item--emphasis-1` reference.
+- Updated `docs/ui-specifications.md` to describe the 0–5 priority range and the three-tier emphasis mapping (none / `item--emphasis-2` / `item--emphasis-3`).
+
 ## [v1.2.6] - 2026-09-14
 
 ### Fix

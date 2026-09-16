@@ -113,7 +113,7 @@ Where:
 - Each task row uses the Framework `.item` structure with an empty `.meta` element, producing a left gray meta bar without numbering.
 - The title is the primary row content. When `due_date` is valid, show a calendar icon followed by the formatted date. When the task has assignees, show a person icon followed by the first assignee's name. Both icons and labels sit inline in a single `flex gap--small` row, placed directly below the title.
 - Kanban headers are left-aligned within their columns, uppercase, and include the visible task count.
-- Kanban task items use priority-mapped Framework emphasis (`item--emphasis-1/2/3`) so high-priority tasks stand out against a plain meta bar, matching Task View.
+- Kanban task items use priority-mapped Framework emphasis (`item--emphasis-2/3`) so high-priority tasks stand out against a plain meta bar, matching Task View.
 - Done-column task titles use a line-through treatment, and done-column due dates are omitted.
 
 ## Kanban spacing
@@ -148,13 +148,10 @@ Spacing must be visible but compact enough for e-paper. If a frame overflows, re
 
 ### Priority
 
-### Priority
-
-- Compact Task View and Kanban View communicate priority with Framework item emphasis classes (`item--emphasis-1/2/3`) applied to the task item.
-- Urgent (4) uses `item--emphasis-3` (strongest).
-- High (3) uses `item--emphasis-2` (medium).
-- Medium (2) uses `item--emphasis-1` (light).
-- Low (1) and none use default emphasis (no class).
+- Compact Task View and Kanban View communicate priority with Framework item emphasis classes (`item--emphasis-2/3`) applied to the task item. Vikunja priority ranges from 0–5.
+- Priority 4–5 (urgent / highest) uses `item--emphasis-3` (strongest left bar).
+- Priority 2–3 (high / medium) uses `item--emphasis-2` (medium left bar).
+- Priority 0–1 (low / none) has no emphasis class (plain item, no left bar).
 
 ### Dates, assignees, and progress
 
