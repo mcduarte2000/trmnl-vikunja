@@ -184,7 +184,7 @@ This is not a task filter but chooses the rendering layout:
 | Description | Maximum number of tasks to display |
 | Help text | — |
 | Type | Number |
-| Range | 1–10 |
+| Range | 1–20 |
 | Default | `6` |
 | Placeholder | — |
 

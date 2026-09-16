@@ -143,7 +143,7 @@ custom_fields:
   name: Tasks Per View
   description: Maximum number of tasks to display
   min: 1
-  max: 10
+  max: 20
   default: 6
 name: Vikunja
 description: To‑do app to organize you life
