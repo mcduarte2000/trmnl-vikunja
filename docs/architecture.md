@@ -53,12 +53,16 @@ All rendered markup must follow Framework 3.3 UI System conventions.
 Vikunja API
     |
     v
-TRMNL polling (polling_url) fetches the flat task list
+TRMNL polling (polling_url) fetches multiple endpoints in parallel:
+  URL 1 — flat task list via /api/v1/projects/{id}/tasks
+  URL 2 — project views via /api/v1/projects/{id}/views
     |
     v
 src/transform.js
+  - normalizes input across single-URL and multi-URL polling shapes
   - promote configured custom-field values to top-level Liquid variables
-  - (Kanban) fetch project views + buckets with request headers built from resolved config
+  - (Kanban) use pre‑fetched project views to find the kanban view,
+    then fetch bucket tasks with a 3 s timeout
   - validate responses and normalize task data
   - apply filters
   - sort and limit
@@ -102,10 +106,10 @@ The transformation layer owns network access and deterministic task preparation.
 
 #### Request contract
 
-The flat task list is fetched upstream by the TRMNL runtime using `polling_url` and `polling_headers`. `src/transform.js` does not re-poll that endpoint.
+The flat task list and project views are fetched upstream by the TRMNL runtime using `polling_url` and `polling_headers`. Two URLs are supplied (line-break separated), so the task list arrives at `input.IDX_0.data` and the project views at `input.IDX_1` (or `input.IDX_1.data` when the API returns a bare array). The transform normalises both shapes before consuming them.
 
-- For Kanban View, the transform fetches additional Vikunja endpoints (the project's views, then the kanban view's bucket tasks). These requests are sent to `<base_url>/api/v1/...`.
-- Build request headers directly from the resolved configured values: `Authorization: Bearer <api_token>` and Cloudflare Access headers when the credentials are configured. Never parse the raw `polling_headers` string, because it still contains Liquid placeholders like `{{ api_token }}`.
+- For Kanban View, the transform uses the pre‑fetched project views to find the kanban view, then fetches the bucket tasks from `<base_url>/api/v1/projects/{id}/views/{kanbanViewId}/tasks` with a 3 s client‑side timeout. This is the only inline network call in Kanban mode, so the 5 s transform window is rarely exceeded.
+- `src/transform.js` does not re-poll the task‑list endpoint. Build request headers directly from the resolved configured values: `Authorization: Bearer <api_token>` and Cloudflare Access headers when the credentials are configured. Never parse the raw `polling_headers` string, because it still contains Liquid placeholders like `{{ api_token }}`.
 - Treat non-2xx responses as errors and surface a clear message (a 401 produces an authentication-specific error).
 - If the API cannot supply view or bucket metadata, return an explicit unavailable-board state rather than falling back to Task View.
 

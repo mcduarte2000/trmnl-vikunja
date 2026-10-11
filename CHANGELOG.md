@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.2.9] - 2026-10-11
+
+### Fix
+- Fixed "Transform timed out after 5s" in Kanban View. The transform previously made two sequential Vikunja API calls (project views, then bucket tasks) inside the 5s transform window, which could exceed the limit on slow responses. The project views endpoint is now fetched as a second polling URL, so it no longer counts against the transform budget; the transform reads it from `input.IDX_1` and makes only the single bucket-tasks call, now bounded by a 3s `AbortController` timeout.
+
+### Change
+- `src/settings.yml` polling URLs are now line-break separated: `/api/v1/projects/{id}/tasks` (task list) and `/api/v1/projects/{id}/views` (project views).
+- `src/transform.js` normalizes input across single-URL (`input.data`) and multi-URL (`input.IDX_0.data`, `input.IDX_1`) polling shapes, so Task View is unaffected.
+- `fetchJson` accepts an optional request timeout (default 3s).
+
+### Documentation
+- Updated `docs/architecture.md` data-flow diagram and request contract for the multi-polling-URL design.
+- Updated `docs/filters.md` and `docs/user-stories.md` (US-006) to describe the pre-fetched views and bounded bucket fetch.
+
 ## [v1.2.8] - 2026-09-16
 
 ### Change

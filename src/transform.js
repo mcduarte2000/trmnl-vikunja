@@ -4,14 +4,15 @@
  * Receives the merged TRMNL data on stdin and returns the prepared data
  * that the Liquid templates render.
  *
- * Input shape (from the assembly layer):
+ * Input shape with multiple polling URLs (Kanban):
  *   {
- *     data: <polled payload>,                       // usually an array of tasks
+ *     IDX_0: { data: [...] },        // task list from /api/v1/projects/{id}/tasks
+ *     IDX_1: [...],                   // project views from /api/v1/projects/{id}/views
  *     trmnl: {
  *       plugin_settings: {
  *         polling_url,
  *         polling_headers,
- *         custom_fields_values: {                   // user-configured values
+ *         custom_fields_values: {     // user-configured values
  *           api_token, base_url, cf_access_client_id, cf_access_client_secret,
  *           status_filter, priority_filter, project_id,
  *           assignee_names, search_query, show_favorites_only, min_progress,
@@ -21,16 +22,49 @@
  *     }
  *   }
  *
+ * Single-URL shape (Task View, no project_id):
+ *   { data: [...], trmnl: { ... } }
+ *
  * Responsibilities:
- *   1. Promote custom-field values to top-level merge variables so the
+ *   1. Normalize input across single-URL and multi-URL polling shapes.
+ *   2. Promote custom-field values to top-level merge variables so the
  *      Liquid templates can read `view_mode`, `status_filter`, `project_id`,
  *      `tasks_per_view`, and `meta`.
- *   2. Apply the documented filter pipeline (status, favorites, priority,
+ *   3. Apply the documented filter pipeline (status, favorites, priority,
  *      progress, due-within, project, assignee, search) in order.
- *   3. In Kanban View, resolve the single project, fetch its kanban buckets,
- *      filter each bucket's tasks, and shape the result into `data.buckets`
+ *   4. In Kanban View, resolve the single project's kanban view from the
+ *      pre-fetched views (at input.IDX_1), then fetch its bucket tasks
+ *      inline with a 3 s timeout. Shape the result into `data.buckets`
  *      as the templates expect: [{ id, title, tasks, done }].
  */
+
+/**
+ * With multiple polling URLs, TRMNL wraps each response under IDX_0, IDX_1, etc.
+ * This normalizes the input so the rest of the transform can always
+ * read input.data as the task array, regardless of 1 or N polling URLs.
+ *
+ * Multi-URL shape: { IDX_0: { data: [...] }, IDX_1: { ... }, trmnl: {...} }
+ * Single-URL shape: { data: [...], trmnl: {...} }
+ */
+function normalizeTasks(input) {
+  if (Array.isArray(input.data)) return input.data;
+  if (input.IDX_0 && Array.isArray(input.IDX_0.data)) return input.IDX_0.data;
+  if (input.IDX_0 && Array.isArray(input.IDX_0)) return input.IDX_0;
+  return [];
+}
+
+/**
+ * With the second polling URL fetching the project views endpoint,
+ * the views response may be under input.IDX_1 or input.IDX_1.data
+ * (when the API returns a bare array).
+ */
+function normalizeViews(input) {
+  const idx1 = input.IDX_1;
+  if (!idx1) return [];
+  if (Array.isArray(idx1)) return idx1;
+  if (Array.isArray(idx1.data)) return idx1.data;
+  return [];
+}
 
 // ── Small helpers ─────────────────────────────────────────────────
 
@@ -89,18 +123,27 @@ function cleanBaseUrl(config) {
   return (config.base_url || "").replace(/\/+$/, "");
 }
 
-async function fetchJson(url, config) {
-  const response = await fetch(url, { headers: buildHeaders(config) });
-  if (!response.ok) {
-    if (response.status === 401) {
-      throw new Error(
-        "Authentication failed (401 Unauthorized). " +
-          "Verify the API token and, if applicable, the Cloudflare Access credentials."
-      );
+async function fetchJson(url, config, timeoutMs = 3000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, {
+      headers: buildHeaders(config),
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error(
+          "Authentication failed (401 Unauthorized). " +
+            "Verify the API token and, if applicable, the Cloudflare Access credentials."
+        );
+      }
+      throw new Error(`Vikunja API error: ${response.status} ${response.statusText}`);
     }
-    throw new Error(`Vikunja API error: ${response.status} ${response.statusText}`);
+    return response.json();
+  } finally {
+    clearTimeout(timer);
   }
-  return response.json();
 }
 
 // ── Filter functions (docs: docs/filters.md) ────────────────────
@@ -235,17 +278,20 @@ function flattenBuckets(buckets) {
 }
 
 /**
- * Fetches the project's kanban buckets. Returns { buckets, doneBucketId }.
- * The buckets are shaped as [{ id, title, tasks: [...], project_view_id }].
+ * Resolves the kanban view from pre-fetched project views, then fetches
+ * the bucket tasks inline. Uses a short timeout so the remaining fetch
+ * does not exhaust the 5 s transform window.
+ *
+ * @param {object} config
+ * @param {Array} views - Pre-fetched project views from the second polling URL
+ * @returns {Promise<{buckets: Array, doneBucketId: number|null}>}
  */
-async function getKanbanBuckets(config) {
+async function getKanbanBuckets(config, views) {
   const projectId = String(config.project_id || "").trim();
   if (projectId === "") {
     throw new Error("Kanban View requires a project number");
   }
-  const baseUrl = cleanBaseUrl(config);
 
-  const views = await fetchJson(`${baseUrl}/api/v1/projects/${projectId}/views`, config);
   const kanbanView = (Array.isArray(views) ? views : []).find(
     (view) => view.view_kind === "kanban"
   );
@@ -253,8 +299,9 @@ async function getKanbanBuckets(config) {
     throw new Error("No Kanban view is available for the selected project");
   }
 
+  const baseUrl = cleanBaseUrl(config);
   const url = `${baseUrl}/api/v1/projects/${projectId}/views/${kanbanView.id}/tasks`;
-  const buckets = await fetchJson(url, config);
+  const buckets = await fetchJson(url, config, 3000);
   if (!Array.isArray(buckets)) {
     throw new Error("Kanban data is unavailable for the selected project");
   }
@@ -313,9 +360,13 @@ async function transform(input) {
     promoted[key] = value;
   }
 
+  // Normalize tasks and views across single-URL and multi-URL polling
+  const normalizedTasks = normalizeTasks(input);
+  const views = normalizeViews(input);
+
   if (config.view_mode === "kanban") {
     try {
-      const { buckets, doneBucketId } = await getKanbanBuckets(config);
+      const { buckets, doneBucketId } = await getKanbanBuckets(config, views);
       const kanbanColumns = buildKanbanColumns(buckets, doneBucketId, config);
       const tasks = flattenBuckets(kanbanColumns);
 
@@ -339,7 +390,7 @@ async function transform(input) {
     }
   }
 
-  const tasks = applyTaskFilters(input.data, config, sortByDueThenPriority);
+  const tasks = applyTaskFilters(normalizedTasks, config, sortByDueThenPriority);
   const limit = parseInt(config.tasks_per_view, 10) || 6;
 
   return {

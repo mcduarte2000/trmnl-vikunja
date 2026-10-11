@@ -220,8 +220,9 @@ Feature: Render a Vikunja Kanban board
     Given Kanban View is selected
     And a project number is selected
     When the plugin polls Vikunja
-    Then it retrieves the project's configured view and buckets when the API exposes them
-    And it retrieves the tasks associated with those buckets
+    Then its second polling URL fetches the project's views
+    And the transform uses the pre-fetched views to find the kanban view
+    And it retrieves the bucket tasks with a 3 s timeout
     And it preserves the API-defined column order
 
   Scenario: Render Kanban columns
